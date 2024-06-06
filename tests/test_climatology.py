@@ -1,7 +1,5 @@
 from datetime import date
 
-import pytest
-
 from earthkit.dates import date_range
 
 
@@ -44,7 +42,9 @@ def test_date_range_leapyear():
     ]
 
     # end is leap (2)
-    assert list(date_range(date(2022, 2, 28), date(2020, 2, 28), date(2024, 2, 29))) == [
+    assert list(
+        date_range(date(2022, 2, 28), date(2020, 2, 28), date(2024, 2, 29))
+    ) == [
         date(2020, 2, 28),
         date(2021, 2, 28),
         date(2022, 2, 28),
@@ -61,7 +61,9 @@ def test_date_range_leapyear():
     ]
 
     # start and end are leap (2)
-    assert list(date_range(date(2022, 2, 28), date(2020, 2, 29), date(2024, 2, 29))) == [
+    assert list(
+        date_range(date(2022, 2, 28), date(2020, 2, 29), date(2024, 2, 29))
+    ) == [
         date(2021, 2, 28),
         date(2022, 2, 28),
         date(2023, 2, 28),
@@ -76,7 +78,9 @@ def test_date_range_leapyear():
     ]
 
     # reference and end are leap
-    assert list(date_range(date(2020, 2, 29), date(2017, 2, 28), date(2020, 2, 29))) == [
+    assert list(
+        date_range(date(2020, 2, 29), date(2017, 2, 28), date(2020, 2, 29))
+    ) == [
         date(2017, 2, 28),
         date(2018, 2, 28),
         date(2019, 2, 28),
@@ -84,7 +88,9 @@ def test_date_range_leapyear():
     ]
 
     # all dates are leap
-    assert list(date_range(date(2020, 2, 29), date(2016, 2, 29), date(2020, 2, 29))) == [
+    assert list(
+        date_range(date(2020, 2, 29), date(2016, 2, 29), date(2020, 2, 29))
+    ) == [
         date(2017, 2, 28),
         date(2018, 2, 28),
         date(2019, 2, 28),
