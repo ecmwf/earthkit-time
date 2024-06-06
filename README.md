@@ -1,5 +1,10 @@
 # earthkit.dates
 
+:warning: This project is BETA and will be experimental for the foreseeable
+future. Interfaces and functionality are likely to change, and the project
+itself may be scrapped. DO NOT use this software in any project/software that is
+operational.
+
 Date manipulation routines for the use of weather data
 
 ## License
