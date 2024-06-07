@@ -236,7 +236,11 @@ class MonthlySequence(Sequence):
 class YearlySequence(Sequence):
     """Sequence of dates happening on given days of each year (in (month, day) format)"""
 
-    def __init__(self, days: Union[Tuple[int, int], Iterable[Tuple[int, int]]]):
+    def __init__(
+        self,
+        days: Union[Tuple[int, int], Iterable[Tuple[int, int]]],
+        excludes: Container[date] = {},
+    ):
         if (
             isinstance(days, tuple)
             and len(days) == 2
@@ -245,12 +249,16 @@ class YearlySequence(Sequence):
             self.days = [days]
         else:
             self.days = sorted(days)
+        self.excludes = excludes
 
     def __contains__(self, reference: date) -> bool:
-        return (reference.month, reference.day) in self.days
+        return (
+            reference.month,
+            reference.day,
+        ) in self.days and reference not in self.excludes
 
     def __repr__(self) -> str:
-        return f"YearlySequence(days={self.days!r})"
+        return f"YearlySequence(days={self.days!r}, excludes={self.excludes!r})"
 
     def next(self, reference: date, strict: bool = True) -> date:
         if not strict and reference in self:
@@ -263,13 +271,17 @@ class YearlySequence(Sequence):
                 for month, day in self.days
                 if day_exists(year, month, day)
                 and (month, day) > (reference.month, reference.day)
+                and date(year, month, day) not in self.excludes
             ),
             (None, None),
         )
         while new_day is None:
             year += 1
             for month, day in self.days:
-                if day_exists(year, month, day):
+                if (
+                    day_exists(year, month, day)
+                    and date(year, month, day) not in self.excludes
+                ):
                     new_month = month
                     new_day = day
                     break
@@ -286,13 +298,17 @@ class YearlySequence(Sequence):
                 for month, day in self.days[::-1]
                 if day_exists(year, month, day)
                 and (month, day) < (reference.month, reference.day)
+                and date(year, month, day) not in self.excludes
             ),
             (None, None),
         )
         while new_day is None:
             year -= 1
             for month, day in self.days[::-1]:
-                if day_exists(year, month, day):
+                if (
+                    day_exists(year, month, day)
+                    and date(year, month, day) not in self.excludes
+                ):
                     new_month = month
                     new_day = day
                     break

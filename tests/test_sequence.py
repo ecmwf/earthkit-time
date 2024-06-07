@@ -1,4 +1,5 @@
 import bisect
+import calendar
 from datetime import date
 from typing import List, Optional, Tuple
 
@@ -12,6 +13,20 @@ from earthkit.dates.sequence import (
     WeeklySequence,
     YearlySequence,
 )
+
+
+class ExcludeLeapFeb28:
+    def __contains__(self, day: date) -> bool:
+        if not day.month == 2:
+            return False
+        if not calendar.isleap(day.year):
+            return False
+        return day.day == 28
+
+
+class ExcludeNonTenYears:
+    def __contains__(self, day: date) -> bool:
+        return day.year % 10 != 0
 
 
 @pytest.mark.parametrize(
@@ -190,6 +205,24 @@ from earthkit.dates.sequence import (
             [(2000, 2, 29), (2004, 2, 29), (2008, 2, 29), (2012, 2, 29), (2016, 2, 29)],
             (2003, 2, 28),
             id="yearly-leaponly",
+        ),
+        pytest.param(
+            YearlySequence([(7, 13)], excludes=[date(2023, 7, 13)]),
+            [(2020, 7, 13), (2021, 7, 13), (2022, 7, 13), (2024, 7, 13), (2025, 7, 13)],
+            (2023, 7, 13),
+            id="yearly-exclude",
+        ),
+        pytest.param(
+            YearlySequence([(1, 31), (2, 28), (2, 29)], excludes=ExcludeLeapFeb28()),
+            [(2007, 1, 31), (2007, 2, 28), (2008, 1, 31), (2008, 2, 29), (2009, 1, 31)],
+            (2008, 3, 10),
+            id="yearly-exclude-leap",
+        ),
+        pytest.param(
+            YearlySequence([(3, 31)], excludes=ExcludeNonTenYears()),  # FIXME
+            [(1990, 3, 31), (2000, 3, 31), (2010, 3, 31), (2020, 3, 31), (2030, 3, 31)],
+            (2001, 3, 31),
+            id="yearly-exclude-almostall",
         ),
     ],
 )
