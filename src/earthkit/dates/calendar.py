@@ -1,5 +1,7 @@
 import calendar
+from datetime import date
 from enum import IntEnum
+from typing import Union
 
 
 class Weekday(IntEnum):
@@ -38,6 +40,25 @@ _MONTH_LENGTHS = [
 ]
 
 
+def month_length(year: int, month: int):
+    """Return the number of days of a given month"""
+    if month < 1 or month > 12:
+        raise ValueError(f"Invalid month: {month}")
+    mlen = _MONTH_LENGTHS[month]
+    if isinstance(mlen, int):
+        return mlen
+    return mlen(year)
+
+
+def day_exists(year: int, month: int, day: int) -> bool:
+    """Check whether a given day exists in the calendar"""
+    if month < 1 or month > 12:
+        return False
+    if day < 1 or day > month_length(year, month):
+        return False
+    return True
+
+
 class MonthInYear:
     year: int
     month: int
@@ -48,11 +69,19 @@ class MonthInYear:
             raise ValueError(f"Invalid month: {month}")
         self.month = month
 
+    def __contains__(self, day: Union[int, date]) -> bool:
+        if isinstance(day, date):
+            if day.year != self.year:
+                return False
+            if day.month != self.month:
+                return False
+            day = day.day
+        if day < 1 or day > self.length():
+            return False
+        return True
+
     def length(self) -> int:
-        res = _MONTH_LENGTHS[self.month]
-        if isinstance(res, int):
-            return res
-        return res(self.year)
+        return month_length(self.year, self.month)
 
     def next(self) -> "MonthInYear":
         d, m = divmod(self.month, 12)

@@ -1,8 +1,49 @@
 from contextlib import nullcontext
+from datetime import date
+from typing import Union
 
 import pytest
 
-from earthkit.dates.calendar import MonthInYear
+from earthkit.dates.calendar import MonthInYear, day_exists, month_length
+
+
+@pytest.mark.parametrize(
+    "year, month, expected",
+    [
+        (2000, 1, 31),
+        (2001, 2, 28),
+        (2002, 3, 31),
+        (2003, 4, 30),
+        (2004, 5, 31),
+        (2005, 6, 30),
+        (2006, 7, 31),
+        (2007, 8, 31),
+        (2008, 9, 30),
+        (2009, 10, 31),
+        (2010, 11, 30),
+        (2011, 12, 31),
+        (2012, 2, 29),
+    ],
+)
+def test_month_length(year: int, month: int, expected: int):
+    assert month_length(year, month) == expected
+
+
+@pytest.mark.parametrize(
+    "year, month, day, expected",
+    [
+        (1999, 0, 12, False),
+        (2000, 1, 32, False),
+        (2001, 2, 29, False),
+        (2002, 13, 18, False),
+        (2003, 8, -5, False),
+        (2004, 2, 29, True),
+        (2005, 6, 31, False),
+        (2006, 7, 31, True),
+    ],
+)
+def test_day_exists(year: int, month: int, day: int, expected: bool):
+    assert day_exists(year, month, day) == expected
 
 
 @pytest.mark.parametrize(
@@ -17,6 +58,27 @@ def test_monthinyear_create(year: int, month: int, ok: bool):
     if ok:
         assert ymonth.year == year
         assert ymonth.month == month
+
+
+@pytest.mark.parametrize(
+    "year, month, day, expected",
+    [
+        (2010, 1, 3, True),
+        (2011, 2, 29, False),
+        (2012, 2, 29, True),
+        (2013, 3, date(2012, 3, 1), False),
+        (2014, 4, date(2014, 3, 8), False),
+        (2015, 5, date(2015, 5, 28), True),
+        (2016, 6, 31, False),
+        (2017, 7, 32, False),
+        (2018, 8, 0, False),
+    ],
+)
+def test_monthinyear_contains(
+    year: int, month: int, day: Union[int, date], expected: bool
+):
+    ymonth = MonthInYear(year, month)
+    assert (day in ymonth) == expected
 
 
 @pytest.mark.parametrize(

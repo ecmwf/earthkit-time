@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from datetime import date, timedelta
 from typing import Container, Iterable, Iterator, Tuple, Union
 
-from .calendar import MonthInYear, Weekday
+from .calendar import MonthInYear, Weekday, day_exists
 
 
 class Sequence(ABC):
@@ -197,7 +197,7 @@ class MonthlySequence(Sequence):
                 day
                 for day in self.days
                 if day > reference.day
-                and day <= ymonth.length()
+                and day in ymonth
                 and (ymonth.month, day) not in self.excludes
             ),
             None,
@@ -205,11 +205,7 @@ class MonthlySequence(Sequence):
         while new_day is None:
             ymonth = ymonth.next()
             for day in self.days:
-                if day > ymonth.length():
-                    continue
-                if (ymonth.month, day) in self.excludes:
-                    continue
-                else:
+                if day in ymonth and (ymonth.month, day) not in self.excludes:
                     new_day = day
                     break
         return date(ymonth.year, ymonth.month, new_day)
@@ -223,7 +219,7 @@ class MonthlySequence(Sequence):
                 day
                 for day in self.days[::-1]
                 if day < reference.day
-                and day <= ymonth.length()
+                and day in ymonth
                 and (ymonth.month, day) not in self.excludes
             ),
             None,
@@ -231,11 +227,73 @@ class MonthlySequence(Sequence):
         while new_day is None:
             ymonth = ymonth.previous()
             for day in self.days[::-1]:
-                if day > ymonth.length():
-                    continue
-                if (ymonth.month, day) in self.excludes:
-                    continue
-                else:
+                if day in ymonth and (ymonth.month, day) not in self.excludes:
                     new_day = day
                     break
         return date(ymonth.year, ymonth.month, new_day)
+
+
+class YearlySequence(Sequence):
+    """Sequence of dates happening on given days of each year (in (month, day) format)"""
+
+    def __init__(self, days: Union[Tuple[int, int], Iterable[Tuple[int, int]]]):
+        if (
+            isinstance(days, tuple)
+            and len(days) == 2
+            and all(isinstance(day, int) for day in days)
+        ):
+            self.days = [days]
+        else:
+            self.days = sorted(days)
+
+    def __contains__(self, reference: date) -> bool:
+        return (reference.month, reference.day) in self.days
+
+    def __repr__(self) -> str:
+        return f"YearlySequence(days={self.days!r})"
+
+    def next(self, reference: date, strict: bool = True) -> date:
+        if not strict and reference in self:
+            return reference
+
+        year = reference.year
+        new_month, new_day = next(
+            (
+                (month, day)
+                for month, day in self.days
+                if day_exists(year, month, day)
+                and (month, day) > (reference.month, reference.day)
+            ),
+            (None, None),
+        )
+        while new_day is None:
+            year += 1
+            for month, day in self.days:
+                if day_exists(year, month, day):
+                    new_month = month
+                    new_day = day
+                    break
+        return date(year, new_month, new_day)
+
+    def previous(self, reference: date, strict: bool = True) -> date:
+        if not strict and reference in self:
+            return reference
+
+        year = reference.year
+        new_month, new_day = next(
+            (
+                (month, day)
+                for month, day in self.days[::-1]
+                if day_exists(year, month, day)
+                and (month, day) < (reference.month, reference.day)
+            ),
+            (None, None),
+        )
+        while new_day is None:
+            year -= 1
+            for month, day in self.days[::-1]:
+                if day_exists(year, month, day):
+                    new_month = month
+                    new_day = day
+                    break
+        return date(year, new_month, new_day)

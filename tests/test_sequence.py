@@ -10,6 +10,7 @@ from earthkit.dates.sequence import (
     MonthlySequence,
     Sequence,
     WeeklySequence,
+    YearlySequence,
 )
 
 
@@ -153,6 +154,42 @@ from earthkit.dates.sequence import (
             ],
             (2022, 5, 9),
             id="monthly-exclude-almostall",
+        ),
+        pytest.param(
+            YearlySequence((1, 1)),
+            [(1999, 1, 1), (2000, 1, 1), (2001, 1, 1), (2002, 1, 1), (2003, 1, 1)],
+            (2002, 2, 2),
+            id="yearly-simple",
+        ),
+        pytest.param(
+            YearlySequence([(1, 1), (4, 2), (7, 2), (10, 1)]),
+            [
+                (2017, 7, 2),
+                (2017, 10, 1),
+                (2018, 1, 1),
+                (2018, 4, 2),
+                (2018, 7, 2),
+            ],
+            (2018, 6, 18),
+            id="yearly-crossyear",
+        ),
+        pytest.param(
+            YearlySequence([(2, 28), (2, 29), (3, 1)]),
+            [(1994, 2, 28), (1994, 3, 1), (1995, 2, 28), (1995, 3, 1), (1996, 2, 28)],
+            (1995, 2, 22),
+            id="yearly-feb28-nonleap",
+        ),
+        pytest.param(
+            YearlySequence([(i, 29) for i in range(1, 13)]),
+            [(2008, 1, 29), (2008, 2, 29), (2008, 3, 29), (2008, 4, 29), (2008, 5, 29)],
+            (2008, 2, 28),
+            id="yearly-feb28-leap",
+        ),
+        pytest.param(
+            YearlySequence((2, 29)),
+            [(2000, 2, 29), (2004, 2, 29), (2008, 2, 29), (2012, 2, 29), (2016, 2, 29)],
+            (2003, 2, 28),
+            id="yearly-leaponly",
         ),
     ],
 )
