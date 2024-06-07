@@ -3,6 +3,8 @@
 from datetime import date
 from typing import Iterator, Union
 
+from .sequence import YearlySequence
+
 
 def date_range(
     reference: date,
@@ -56,19 +58,11 @@ def date_range(
         if reference.month == 2 and reference.day == 29:
             reference = reference.replace(day=28)
 
-        if isinstance(start, date):
-            rstart = start.replace(month=reference.month, day=reference.day)
-            start = start.year if start <= rstart else start.year + 1
+        if not isinstance(start, date):
+            start = reference.replace(year=start)
 
-        if isinstance(end, date):
-            rend = end.replace(month=reference.month, day=reference.day)
-            end = (
-                end.year
-                if end > rend or (end == rend and include_endpoint)
-                else end.year - 1
-            )
-        elif not include_endpoint:
-            end -= 1
+        if not isinstance(end, date):
+            end = reference.replace(year=end)
 
-        for year in range(start, end + 1):
-            yield reference.replace(year=year)
+        seq = YearlySequence((reference.month, reference.day))
+        yield from seq.range(start, end, include_end=include_endpoint)
