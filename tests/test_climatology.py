@@ -1,6 +1,8 @@
-from datetime import date
+from datetime import date, timedelta
 
-from earthkit.dates import date_range
+from earthkit.dates import date_range, model_climate_dates
+from earthkit.dates.calendar import MONDAY, THURSDAY
+from earthkit.dates.sequence import MonthlySequence, WeeklySequence
 
 
 def test_date_range_leapyear():
@@ -95,4 +97,36 @@ def test_date_range_leapyear():
         date(2018, 2, 28),
         date(2019, 2, 28),
         date(2020, 2, 28),
+    ]
+
+
+def test_model_climate_dates():
+    assert list(
+        model_climate_dates(
+            date(2024, 2, 29),
+            2020,
+            2023,
+            timedelta(days=7),
+            timedelta(days=7),
+            WeeklySequence([MONDAY, THURSDAY]),
+        )
+    ) == [
+        date(y, m, d)
+        for y in range(2020, 2024)
+        for m, d in [(2, 22), (2, 26), (2, 28), (3, 4), (3, 7)]
+    ]
+
+    assert list(
+        model_climate_dates(
+            date(2024, 3, 2),
+            date(2020, 1, 1),
+            date(2024, 1, 1),
+            timedelta(days=10),
+            timedelta(days=10),
+            MonthlySequence(range(1, 32, 4), excludes=[(2, 29)]),
+        )
+    ) == [
+        date(y, m, d)
+        for y in range(2020, 2024)
+        for m, d in [(2, 21), (2, 25), (3, 1), (3, 5), (3, 9)]
     ]

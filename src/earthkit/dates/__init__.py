@@ -1,4 +1,4 @@
-from .climatology import date_range
+from .climatology import date_range, model_climate_dates
 from .sequence import (
     DailySequence,
     MonthlySequence,
@@ -9,6 +9,7 @@ from .sequence import (
 
 __all__ = [
     "date_range",
+    "model_climate_dates",
     "DailySequence",
     "MonthlySequence",
     "Sequence",
