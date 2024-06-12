@@ -22,13 +22,16 @@ classifiers = [
     "Topic :: Scientific/Engineering",
 ]
 
-[tool.isort]
-profile = "black"
-
 [project.optional-dependencies]
 test = [
     "pytest",
 ]
+
+[project.scripts]
+earthkit-climdates = "earthkit.dates.cli.climatology:main"
+
+[tool.isort]
+profile = "black"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
