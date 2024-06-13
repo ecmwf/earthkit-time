@@ -29,6 +29,7 @@ test = [
 
 [project.scripts]
 earthkit-climdates = "earthkit.dates.cli.climatology:main"
+earthkit-dateseq = "earthkit.dates.cli.sequence:main"
 
 [tool.isort]
 profile = "black"
