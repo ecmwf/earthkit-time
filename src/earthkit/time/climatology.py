@@ -107,8 +107,8 @@ def model_climate_dates(
 
     Examples
     --------
-    >>> from earthkit.dates.calendar import MONDAY, THURSDAY
-    >>> from earthkit.dates import MonthlySequence, WeeklySequence
+    >>> from earthkit.time.calendar import MONDAY, THURSDAY
+    >>> from earthkit.time import MonthlySequence, WeeklySequence
     >>> sequence = WeeklySequence([MONDAY, THURSDAY])
     >>> [f"{d:%Y%m%d}" for d in model_climate_dates(date(2024, 2, 12), 2020, 2023, 7, 7, sequence)]
     ... # doctest: +NORMALIZE_WHITESPACE

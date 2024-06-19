@@ -3,10 +3,10 @@ requires = ["setuptools>=65", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "earthkit-dates"
+name = "earthkit-time"
 version = "0.0.1"
 requires-python = ">= 3.8"
-description = "Date manipulation routines for the use of weather data"
+description = "Date and time manipulation routines for the use of weather data"
 license = {file = "LICENSE"}
 readme = "README.md"
 classifiers = [
@@ -28,22 +28,23 @@ test = [
 ]
 
 [project.scripts]
-earthkit-climdates = "earthkit.dates.cli.climatology:main"
-earthkit-dateseq = "earthkit.dates.cli.sequence:main"
+earthkit-climdates = "earthkit.time.cli.climatology:main"
+earthkit-dateseq = "earthkit.time.cli.sequence:main"
 
 [tool.isort]
 profile = "black"
 
 [tool.pytest.ini_options]
-minversion = "6.0"
+minversion = "8.1"
 addopts = "--doctest-modules"
 testpaths = [
     "src",
     "tests",
 ]
+consider_namespace_packages = true
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-"earthkit.dates.data" = ["*/*.yaml"]
+"earthkit.time.data" = ["*/*.yaml"]

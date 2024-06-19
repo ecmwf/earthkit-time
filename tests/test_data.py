@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from earthkit.dates.data import ResourceType, find_resource
+from earthkit.time.data import ResourceType, find_resource
 
 
 def test_find_resource(

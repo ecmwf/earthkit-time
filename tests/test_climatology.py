@@ -2,9 +2,9 @@ from datetime import date, timedelta
 
 import pytest
 
-from earthkit.dates import date_range, model_climate_dates
-from earthkit.dates.calendar import MONDAY, THURSDAY
-from earthkit.dates.sequence import MonthlySequence, WeeklySequence
+from earthkit.time import date_range, model_climate_dates
+from earthkit.time.calendar import MONDAY, THURSDAY
+from earthkit.time.sequence import MonthlySequence, WeeklySequence
 
 
 def test_date_range_leapyear():

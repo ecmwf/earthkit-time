@@ -3,7 +3,7 @@ from typing import List, Tuple
 
 import pytest
 
-from earthkit.dates.cli.cliout import format_date, format_date_list
+from earthkit.time.cli.cliout import format_date, format_date_list
 
 
 @pytest.mark.parametrize(

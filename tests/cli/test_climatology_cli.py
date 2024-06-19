@@ -4,8 +4,8 @@ from typing import Union
 
 import pytest
 
-from earthkit.dates.calendar import Weekday
-from earthkit.dates.cli.climatology import date_range_action, model_climate_action
+from earthkit.time.calendar import Weekday
+from earthkit.time.cli.climatology import date_range_action, model_climate_action
 
 
 @pytest.mark.parametrize(

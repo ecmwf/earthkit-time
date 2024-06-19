@@ -7,7 +7,7 @@ from typing import List, Optional, Tuple, Type
 import pytest
 import yaml
 
-from earthkit.dates.calendar import (
+from earthkit.time.calendar import (
     FRIDAY,
     MONDAY,
     SATURDAY,
@@ -16,7 +16,7 @@ from earthkit.dates.calendar import (
     WEDNESDAY,
     month_length,
 )
-from earthkit.dates.sequence import (
+from earthkit.time.sequence import (
     DailySequence,
     MonthlySequence,
     Sequence,
@@ -489,7 +489,7 @@ def test_sequence_from_resource(
         )
     )
 
-    envname = "EARTHKIT_DATES_SEQ_PATH"
+    envname = "EARTHKIT_TIME_SEQ_PATH"
     monkeypatch.setenv(envname, os.pathsep.join([str(seq_path1), str(seq_path2)]))
 
     print(os.getenv(envname))

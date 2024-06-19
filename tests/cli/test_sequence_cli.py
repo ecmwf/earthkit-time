@@ -3,8 +3,8 @@ from datetime import date
 
 import pytest
 
-from earthkit.dates.calendar import Weekday
-from earthkit.dates.cli.sequence import (
+from earthkit.time.calendar import Weekday
+from earthkit.time.cli.sequence import (
     seq_bracket_action,
     seq_next_action,
     seq_prev_action,

@@ -1,7 +1,7 @@
 import argparse
 from typing import List, Tuple
 
-from earthkit.dates.sequence import (
+from ..sequence import (
     DailySequence,
     MonthlySequence,
     Sequence,
@@ -43,7 +43,7 @@ Friday)
 
 PRESETS: sequence presets can be stored in the package as well as externally
 defined. If a preset name is given, the corresponding file will be searched in
-``EARTHKIT_DATES_SEQ_PATH``, then in the package itself
+``EARTHKIT_TIME_SEQ_PATH``, then in the package itself
 
 EXCLUDES: specific days can be excluded from sequences:
 * daily: exclude specific days of the month

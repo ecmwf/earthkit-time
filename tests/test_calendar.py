@@ -4,7 +4,7 @@ from typing import Tuple, Union
 
 import pytest
 
-from earthkit.dates.calendar import (
+from earthkit.time.calendar import (
     MonthInYear,
     Weekday,
     day_exists,

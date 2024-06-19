@@ -158,14 +158,14 @@ class Sequence(ABC):
         """Load a sequence from a resource file
 
         ``name`` should be either the name of a known sequence (in
-        ``earthkit.dates.data.sequences`` or ``EARTHKIT_DATES_SEQ_PATH``,
+        ``earthkit.time.data.sequences`` or ``EARTHKIT_TIME_SEQ_PATH``,
         without the extension), or the path to a YAML file
 
         Raises `FileNotFoundError` if no corresponding resource is found
         """
         path = name if os.path.isfile(name) else None
         seq_dict = load_yaml(
-            f"sequences/{name}.yaml", path, env_path="EARTHKIT_DATES_SEQ_PATH"
+            f"sequences/{name}.yaml", path, env_path="EARTHKIT_TIME_SEQ_PATH"
         )
         if not isinstance(seq_dict, dict):
             raise ValueError("Invalid resource file")

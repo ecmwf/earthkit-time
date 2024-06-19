@@ -3,8 +3,8 @@ from typing import Callable, List, Optional, TypeVar, Union
 
 import pytest
 
-from earthkit.dates.calendar import Weekday
-from earthkit.dates.cli.cliargs import (
+from earthkit.time.calendar import Weekday
+from earthkit.time.cli.cliargs import (
     Tuple,
     int_list,
     list_arg,

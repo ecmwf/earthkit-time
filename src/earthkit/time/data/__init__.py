@@ -6,7 +6,7 @@ from typing import Optional, TextIO, Tuple
 
 import yaml
 
-PACKAGE = "earthkit.dates.data"
+PACKAGE = "earthkit.time.data"
 
 
 def _extract_package(path: str) -> Tuple[str, str]:
