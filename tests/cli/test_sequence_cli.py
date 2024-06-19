@@ -1,5 +1,6 @@
 import argparse
 from datetime import date
+
 import pytest
 
 from earthkit.dates.calendar import Weekday

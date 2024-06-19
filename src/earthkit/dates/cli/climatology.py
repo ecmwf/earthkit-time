@@ -1,11 +1,10 @@
 import argparse
 from typing import List, Optional
 
-from earthkit.dates.cli.cliargs import create_sequence
-
+from ..calendar import parse_date
 from ..climatology import date_range, model_climate_dates
 from .actions import ActionParser
-from .cliargs import SEQ_EPILOG, add_sequence_args, date_arg
+from .cliargs import SEQ_EPILOG, add_sequence_args, create_sequence
 from .cliout import format_date_list
 
 
@@ -36,11 +35,11 @@ def get_parser() -> argparse.ArgumentParser:
         help="compute climatological date ranges",
         description="Compute climatological date ranges, one day per year in a given range",
     )
-    range_action.add_argument("date", type=date_arg, help="reference date")
+    range_action.add_argument("date", type=parse_date, help="reference date")
 
     range_start_group = range_action.add_mutually_exclusive_group(required=True)
     range_start_group.add_argument(
-        "--from-date", type=date_arg, dest="start", help="starting date"
+        "--from-date", type=parse_date, dest="start", help="starting date"
     )
     range_start_group.add_argument(
         "--from-year", type=int, dest="start", help="starting year"
@@ -48,7 +47,7 @@ def get_parser() -> argparse.ArgumentParser:
 
     range_end_group = range_action.add_mutually_exclusive_group(required=True)
     range_end_group.add_argument(
-        "--to-date", type=date_arg, dest="end", help="ending date"
+        "--to-date", type=parse_date, dest="end", help="ending date"
     )
     range_end_group.add_argument("--to-year", type=int, dest="end", help="ending year")
 
@@ -64,11 +63,11 @@ def get_parser() -> argparse.ArgumentParser:
         epilog=SEQ_EPILOG,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    mclim_action.add_argument("date", type=date_arg, help="reference date")
+    mclim_action.add_argument("date", type=parse_date, help="reference date")
 
     mclim_start_group = mclim_action.add_mutually_exclusive_group(required=True)
     mclim_start_group.add_argument(
-        "--from-date", type=date_arg, dest="start", help="starting date"
+        "--from-date", type=parse_date, dest="start", help="starting date"
     )
     mclim_start_group.add_argument(
         "--from-year", type=int, dest="start", help="starting year"
@@ -76,7 +75,7 @@ def get_parser() -> argparse.ArgumentParser:
 
     mclim_end_group = mclim_action.add_mutually_exclusive_group(required=True)
     mclim_end_group.add_argument(
-        "--to-date", type=date_arg, dest="end", help="ending date"
+        "--to-date", type=parse_date, dest="end", help="ending date"
     )
     mclim_end_group.add_argument("--to-year", type=int, dest="end", help="ending year")
 

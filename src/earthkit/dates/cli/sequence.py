@@ -1,8 +1,9 @@
 import argparse
 from typing import List, Optional
 
+from ..calendar import parse_date
 from .actions import ActionParser
-from .cliargs import SEQ_EPILOG, add_sequence_args, create_sequence, date_arg
+from .cliargs import SEQ_EPILOG, add_sequence_args, create_sequence
 from .cliout import format_date, format_date_list
 
 
@@ -51,7 +52,7 @@ def get_parser() -> argparse.ArgumentParser:
         epilog=SEQ_EPILOG,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    next_action.add_argument("date", type=date_arg, help="reference date")
+    next_action.add_argument("date", type=parse_date, help="reference date")
     add_sequence_args(next_action)
     next_action.add_argument(
         "--inclusive",
@@ -67,7 +68,7 @@ def get_parser() -> argparse.ArgumentParser:
         epilog=SEQ_EPILOG,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    prev_action.add_argument("date", type=date_arg, help="reference date")
+    prev_action.add_argument("date", type=parse_date, help="reference date")
     add_sequence_args(prev_action)
     prev_action.add_argument(
         "--inclusive",
@@ -84,8 +85,8 @@ def get_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     add_sequence_args(range_action)
-    range_action.add_argument("from", type=date_arg, help="starting date")
-    range_action.add_argument("to", type=date_arg, help="ending date")
+    range_action.add_argument("from", type=parse_date, help="starting date")
+    range_action.add_argument("to", type=parse_date, help="ending date")
     range_action.add_argument(
         "--exclude-start", action="store_true", help="exclude starting date"
     )
@@ -102,7 +103,7 @@ def get_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     add_sequence_args(bracket_action)
-    bracket_action.add_argument("date", type=date_arg, help="reference date")
+    bracket_action.add_argument("date", type=parse_date, help="reference date")
     bracket_action.add_argument(
         "before",
         nargs="?",

@@ -1,5 +1,7 @@
 from datetime import date, timedelta
 
+import pytest
+
 from earthkit.dates import date_range, model_climate_dates
 from earthkit.dates.calendar import MONDAY, THURSDAY
 from earthkit.dates.sequence import MonthlySequence, WeeklySequence
@@ -98,6 +100,9 @@ def test_date_range_leapyear():
         date(2019, 2, 28),
         date(2020, 2, 28),
     ]
+
+    with pytest.raises(ValueError, match="^Unknown recurrence"):
+        list(date_range(date(2021, 1, 2), 2000, 2004, "sesquiannually"))
 
 
 def test_model_climate_dates():

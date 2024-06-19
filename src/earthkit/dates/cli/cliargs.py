@@ -1,5 +1,4 @@
 import argparse
-from datetime import date, datetime
 from typing import List, Tuple
 
 from earthkit.dates.sequence import (
@@ -10,44 +9,13 @@ from earthkit.dates.sequence import (
     YearlySequence,
 )
 
-from ..calendar import Weekday, day_exists, month_length
-
-
-def date_arg(arg: str) -> date:
-    try_formats = ["%Y%m%d"]
-    dt = None
-    for fmt in try_formats:
-        try:
-            dt = datetime.strptime(arg, fmt)
-        except ValueError:
-            continue
-        else:
-            break
-    if dt is None:
-        raise ValueError(f"Unrecognised date format: {arg!r}")
-    return dt.date()
-
-
-def weekday_arg(arg: str) -> Weekday:
-    if arg.isdigit():
-        iarg = int(arg)
-        if iarg not in range(7):
-            raise ValueError(f"Week day out of range: {arg} not in 0-6")
-        return Weekday(iarg)
-    arg = arg.upper()
-    matching = [wd for wd in Weekday if wd.name.startswith(arg)]
-    if not matching:
-        raise ValueError(f"Unrecognised week day: {arg!r}")
-    if len(matching) > 1:
-        others = ", ".join(wd.name.capitalize() for wd in matching)
-        raise ValueError(f"Ambiguous week day: {arg!r} could be any of {others}")
-    return matching[0]
+from ..calendar import Weekday, parse_date, parse_mmdd, to_weekday
 
 
 def weekly_days(arg: str) -> List[Weekday]:
     if not arg:
         return []
-    return [weekday_arg(elem) for elem in arg.split("/")]
+    return [to_weekday(elem) for elem in arg.split("/")]
 
 
 def int_list(arg: str) -> List[int]:
@@ -56,26 +24,10 @@ def int_list(arg: str) -> List[int]:
     return [int(elem) for elem in arg.split("/")]
 
 
-def mmdd_arg(arg: str) -> Tuple[int, int]:
-    if len(arg) != 4:
-        raise ValueError(f"Unrecognised month-day value: {arg!r}")
-    mm = arg[:2]
-    dd = arg[2:]
-    if not mm.isdigit() or not dd.isdigit():
-        raise ValueError(f"Unrecognised month-day value: {arg!r}")
-    m = int(mm)
-    if m not in range(1, 13):
-        raise ValueError(f"Invalid month: {m} not in 1-12")
-    d = int(dd)
-    if not day_exists(2000, m, d):
-        raise ValueError(f"Invalid day: {d} not in 1-{month_length(2000, m)}")
-    return (m, d)
-
-
 def yearly_days(arg: str) -> List[Tuple[int, int]]:
     if not arg:
         return []
-    return [mmdd_arg(elem) for elem in arg.split("/")]
+    return [parse_mmdd(elem) for elem in arg.split("/")]
 
 
 def list_arg(arg: str) -> List[str]:
@@ -88,6 +40,10 @@ SEQ_EPILOG = """
 WEEKDAYS: week days can be specified either by number (0 = Monday, 1 = Tuesday,
 etc) or by any unambiguous prefix of the name (case-insensitive, e.g. M, tue,
 Friday)
+
+PRESETS: sequence presets can be stored in the package as well as externally
+defined. If a preset name is given, the corresponding file will be searched in
+``EARTHKIT_DATES_SEQ_PATH``, then in the package itself
 
 EXCLUDES: specific days can be excluded from sequences:
 * daily: exclude specific days of the month
@@ -117,6 +73,11 @@ def add_sequence_args(parser: argparse.ArgumentParser):
         default=None,
         help="yearly inputs on these days (MMDD, slash-separated)",
     )
+    seq_group.add_argument(
+        "--preset",
+        default=None,
+        help="name of a preset sequence, or path to a valid YAML preset file (see PRESETS)",
+    )
 
     parser.add_argument(
         "--exclude",
@@ -142,11 +103,13 @@ def create_sequence(
         elif args.weekly is not None:
             seq = WeeklySequence(args.weekly)
         elif args.monthly is not None:
-            excludes = [mmdd_arg(elem) for elem in args.exclude]
+            excludes = [parse_mmdd(elem) for elem in args.exclude]
             seq = MonthlySequence(args.monthly, excludes=excludes)
         elif args.yearly is not None:
-            excludes = [date_arg(elem) for elem in args.exclude]
+            excludes = [parse_date(elem) for elem in args.exclude]
             seq = YearlySequence(args.yearly, excludes=excludes)
+        elif args.preset is not None:
+            seq = Sequence.from_resource(args.preset)
     except ValueError as e:
         parser.error(str(e))
     assert seq is not None, "Unsupported sequence?!"

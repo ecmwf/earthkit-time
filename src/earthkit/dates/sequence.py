@@ -1,8 +1,17 @@
+import os.path
 from abc import ABC, abstractmethod
 from datetime import date, timedelta
-from typing import Container, Iterable, Iterator, Tuple, Union
+from typing import Container, Dict, Iterable, Iterator, Optional, Tuple, Type, Union
 
-from .calendar import MonthInYear, Weekday, day_exists
+from .calendar import (
+    MonthInYear,
+    Weekday,
+    day_exists,
+    parse_date,
+    parse_mmdd,
+    to_weekday,
+)
+from .data import load_yaml
 
 
 class Sequence(ABC):
@@ -99,14 +108,81 @@ class Sequence(ABC):
                 continue
             yield current
 
+    @classmethod
+    @abstractmethod
+    def _from_dict(cls, seq_dict: dict) -> "Sequence":
+        """Create a specific sequence from the given dictionary
 
-class DailySequence(Sequence):
+        Dictionary contents can vary depending on the sequence. Frequent items are:
+        * days: list of recurring days
+        * excludes: specification of which days to skip
+        """
+        raise NotImplementedError
+
+    _known_types: Dict[str, Type["Sequence"]] = {}
+
+    @classmethod
+    def _register_sequence(cls, name: str, class_: Type["Sequence"]):
+        assert name not in cls._known_types
+        cls._known_types[name] = class_
+
+    @classmethod
+    def __init_subclass__(cls, /, name: Optional[str] = None, **kwargs):
+        super().__init_subclass__(**kwargs)
+        if name is not None:
+            Sequence._register_sequence(name, cls)
+
+    @classmethod
+    def from_dict(cls, seq_dict: dict) -> "Sequence":
+        """Create a sequence from the given dictionary
+
+        The type of sequence is specified by the ``type`` key, and must match
+        one of the known sequences, e.g. ``daily``, ``weekly``, ``monthly``,
+        ``yearly``.
+
+        Dictionary contents can vary depending on the sequence. Frequent items are:
+        * days: list of recurring days
+        * excludes: specification of which days to skip
+
+        Raises `ValueError` if the type is unknown
+        """
+        if "type" not in seq_dict:
+            raise ValueError("Sequence dictionary must contain `type` key")
+        type_ = seq_dict["type"]
+        if type_ not in cls._known_types:
+            raise ValueError(f"Unknown type {type_!r}")
+        return cls._known_types[type_]._from_dict(seq_dict)
+
+    @classmethod
+    def from_resource(cls, name: str) -> "Sequence":
+        """Load a sequence from a resource file
+
+        ``name`` should be either the name of a known sequence (in
+        ``earthkit.dates.data.sequences`` or ``EARTHKIT_DATES_SEQ_PATH``,
+        without the extension), or the path to a YAML file
+
+        Raises `FileNotFoundError` if no corresponding resource is found
+        """
+        path = name if os.path.isfile(name) else None
+        seq_dict = load_yaml(
+            f"sequences/{name}.yaml", path, env_path="EARTHKIT_DATES_SEQ_PATH"
+        )
+        if not isinstance(seq_dict, dict):
+            raise ValueError("Invalid resource file")
+        return cls.from_dict(seq_dict)
+
+
+class DailySequence(Sequence, name="daily"):
     """Sequence of consecutive dates
 
     Any day number (in the month) present in ``excludes`` will be skipped
+
+    Can be created from a `dict` with items:
+    * ``type``: ``"daily"``
+    * ``excludes``: (list of int, optional) days of the month to exclude
     """
 
-    def __init__(self, excludes: Container[int] = {}):
+    def __init__(self, excludes: Container[int] = set()):
         self.excludes = excludes
 
     def __contains__(self, reference: date) -> bool:
@@ -115,9 +191,20 @@ class DailySequence(Sequence):
     def __repr__(self) -> str:
         return f"DailySequence(excludes={self.excludes!r})"
 
+    @classmethod
+    def _from_dict(cls, seq_dict: dict) -> Sequence:
+        return cls(excludes=set(seq_dict.get("excludes", set())))
 
-class WeeklySequence(Sequence):
-    """Sequence of dates happening on given days of each week"""
+
+class WeeklySequence(Sequence, name="weekly"):
+    """Sequence of dates happening on given days of each week
+
+    Can be created from a `dict` with items:
+    * ``type``: ``"weekly"``
+    * ``days``: (int, str, list of int, list of str) days of the week, either
+      numeric (0 = Monday, ..., 6 = Sunday) or unambiguous prefixes of names
+      (e.g. ``"M"``, ``"tue"``, ``"Friday"``)
+    """
 
     def __init__(self, days: Union[int, Weekday, Iterable[int], Iterable[Weekday]]):
         if isinstance(days, (int, Weekday)):
@@ -159,15 +246,34 @@ class WeeklySequence(Sequence):
         else:
             return reference + timedelta(days=(delta - 7))
 
+    @classmethod
+    def _from_dict(cls, seq_dict: dict) -> Sequence:
+        if "days" not in seq_dict:
+            raise ValueError("Weekly sequence must provide `days`")
+        days = seq_dict["days"]
+        if isinstance(days, (int, str)):
+            days = [to_weekday(days)]
+        else:
+            days = [to_weekday(day) for day in days]
+        return cls(days)
 
-class MonthlySequence(Sequence):
+
+class MonthlySequence(Sequence, name="monthly"):
     """Sequence of dates happening on given days of each month
 
     Any ``(month, day)`` tuple present in ``excludes`` will be skipped
+
+    Can be created from a `dict` with items:
+    * ``type``: ``"monthly"``
+    * ``days``: (int, list of int) days of the month (1-31)
+    * ``excludes``: (list of pairs of int, list of str, optional) days of the
+      year to exclude, either in (month, day) or in "MMDD" form
     """
 
     def __init__(
-        self, days: Union[int, Iterable[int]], excludes: Container[Tuple[int, int]] = {}
+        self,
+        days: Union[int, Iterable[int]],
+        excludes: Container[Tuple[int, int]] = set(),
     ):
         if isinstance(days, int):
             self.days = [days]
@@ -232,14 +338,29 @@ class MonthlySequence(Sequence):
                     break
         return date(ymonth.year, ymonth.month, new_day)
 
+    @classmethod
+    def _from_dict(cls, seq_dict: dict) -> Sequence:
+        if "days" not in seq_dict:
+            raise ValueError("Monthly sequence must provide `days`")
+        excludes = {parse_mmdd(exc) for exc in seq_dict.get("excludes", set())}
+        return cls(seq_dict["days"], excludes=excludes)
 
-class YearlySequence(Sequence):
-    """Sequence of dates happening on given days of each year (in (month, day) format)"""
+
+class YearlySequence(Sequence, name="yearly"):
+    """Sequence of dates happening on given days of each year (in (month, day) format)
+
+    Can be created from a `dict` with items:
+    * ``type``: ``"yearly"``
+    * ``days``: (str, pair of int, list of str, list of pairs of int) days of the year
+      either in "MMDD" or in (month, day) form (1-12, 1-31)
+    * ``excludes``: (list of str, list of triples of int) dates to exclude,
+      either in "YYYYMMDD" or in (year, month, day) form
+    """
 
     def __init__(
         self,
         days: Union[Tuple[int, int], Iterable[Tuple[int, int]]],
-        excludes: Container[date] = {},
+        excludes: Container[date] = set(),
     ):
         if (
             isinstance(days, tuple)
@@ -313,3 +434,15 @@ class YearlySequence(Sequence):
                     new_day = day
                     break
         return date(year, new_month, new_day)
+
+    @classmethod
+    def _from_dict(cls, seq_dict: dict) -> Sequence:
+        if "days" not in seq_dict:
+            raise ValueError("Yearly sequence must provide `days`")
+        days = seq_dict["days"]
+        if isinstance(days, str) or isinstance(days[0], int):
+            days = [parse_mmdd(days)]
+        else:
+            days = [parse_mmdd(day) for day in days]
+        excludes = {parse_date(exc) for exc in seq_dict.get("excludes", set())}
+        return cls(days, excludes=excludes)

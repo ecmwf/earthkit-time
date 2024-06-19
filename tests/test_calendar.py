@@ -1,10 +1,44 @@
 from contextlib import nullcontext
 from datetime import date
-from typing import Union
+from typing import Tuple, Union
 
 import pytest
 
-from earthkit.dates.calendar import MonthInYear, day_exists, month_length
+from earthkit.dates.calendar import (
+    MonthInYear,
+    Weekday,
+    day_exists,
+    month_length,
+    parse_date,
+    parse_mmdd,
+    to_weekday,
+)
+
+
+@pytest.mark.parametrize(
+    "arg, expected",
+    [
+        (-1, "^Week day out of range: "),
+        (0, Weekday.MONDAY),
+        (1, Weekday.TUESDAY),
+        (7, "^Week day out of range: "),
+        ("3", Weekday.THURSDAY),
+        ("5", Weekday.SATURDAY),
+        ("8", "^Week day out of range: "),
+        ("M", Weekday.MONDAY),
+        ("T", "^Ambiguous week day: "),
+        ("wed", Weekday.WEDNESDAY),
+        ("Fri", Weekday.FRIDAY),
+        ("SUNDAY", Weekday.SUNDAY),
+        ("Notaday", "^Unrecognised week day: "),
+    ],
+)
+def test_to_weekday(arg: Union[int, str], expected: Union[Weekday, str]):
+    context = nullcontext()
+    if isinstance(expected, str):
+        context = pytest.raises(ValueError, match=expected)
+    with context:
+        assert to_weekday(arg) == expected
 
 
 @pytest.mark.parametrize(
@@ -23,10 +57,15 @@ from earthkit.dates.calendar import MonthInYear, day_exists, month_length
         (2010, 11, 30),
         (2011, 12, 31),
         (2012, 2, 29),
+        (2013, 13, "^Invalid month: 13$"),
     ],
 )
-def test_month_length(year: int, month: int, expected: int):
-    assert month_length(year, month) == expected
+def test_month_length(year: int, month: int, expected: Union[int, str]):
+    context = nullcontext()
+    if isinstance(expected, str):
+        context = pytest.raises(ValueError, match=expected)
+    with context:
+        assert month_length(year, month) == expected
 
 
 @pytest.mark.parametrize(
@@ -124,3 +163,53 @@ def test_monthinyear_previous(year: int, month: int, eyear: int, emonth: int):
     prev_ymonth = ymonth.previous()
     assert prev_ymonth.year == eyear
     assert prev_ymonth.month == emonth
+
+
+@pytest.mark.parametrize(
+    "arg, expected",
+    [
+        ((5,), "^not enough values to unpack"),
+        ((10, 3), (10, 3)),
+        ((4, 31), "^Invalid day: "),
+        ("14", "^Unrecognised month-day value: "),
+        ("test", "^Unrecognised month-day value: "),
+        ("1304", "^Invalid month: "),
+        ("0230", "^Invalid day: "),
+        ("0906", (9, 6)),
+        ("1213", (12, 13)),
+    ],
+)
+def test_parse_mmdd(
+    arg: Union[Tuple[int, int], str], expected: Union[Tuple[int, int], str]
+):
+    context = nullcontext()
+    if isinstance(expected, str):
+        context = pytest.raises(ValueError, match=expected)
+    with context:
+        assert parse_mmdd(arg) == expected
+
+
+@pytest.mark.parametrize(
+    "arg, expected",
+    [
+        pytest.param("", None, id="empty"),
+        pytest.param("2020", None, id="yearonly"),
+        pytest.param("202005", None, id="yearmonthonly"),
+        pytest.param("20202503", None, id="notadate"),
+        pytest.param("20201204", (2020, 12, 4), id="ok"),
+        pytest.param("202010251200", None, id="toolong"),
+        pytest.param((2022,), "^not enough values to unpack", id="tup-inclomplete"),
+        pytest.param((2022, 2, 3), (2022, 2, 3), id="tup-ok"),
+        pytest.param((2022, 2, 30), "^Invalid date: ", id="tup-ok"),
+    ],
+)
+def test_parse_date(arg: str, expected: Union[Tuple[int, int, int], None]):
+    context = nullcontext()
+    if expected is None:
+        context = pytest.raises(ValueError, match="^Unrecognised date format: ")
+    elif isinstance(expected, str):
+        context = pytest.raises(ValueError, match=expected)
+    else:
+        expected = date(*expected)
+    with context:
+        assert parse_date(arg) == expected
