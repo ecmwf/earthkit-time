@@ -127,10 +127,10 @@ class Sequence(ABC):
         cls._known_types[name] = class_
 
     @classmethod
-    def __init_subclass__(cls, /, name: Optional[str] = None, **kwargs):
+    def __init_subclass__(cls, /, seqname: Optional[str] = None, **kwargs):
         super().__init_subclass__(**kwargs)
-        if name is not None:
-            Sequence._register_sequence(name, cls)
+        if seqname is not None:
+            Sequence._register_sequence(seqname, cls)
 
     @classmethod
     def from_dict(cls, seq_dict: dict) -> "Sequence":
@@ -172,7 +172,7 @@ class Sequence(ABC):
         return cls.from_dict(seq_dict)
 
 
-class DailySequence(Sequence, name="daily"):
+class DailySequence(Sequence, seqname="daily"):
     """Sequence of consecutive dates
 
     Any day number (in the month) present in ``excludes`` will be skipped
@@ -196,7 +196,7 @@ class DailySequence(Sequence, name="daily"):
         return cls(excludes=set(seq_dict.get("excludes", set())))
 
 
-class WeeklySequence(Sequence, name="weekly"):
+class WeeklySequence(Sequence, seqname="weekly"):
     """Sequence of dates happening on given days of each week
 
     Can be created from a `dict` with items:
@@ -258,7 +258,7 @@ class WeeklySequence(Sequence, name="weekly"):
         return cls(days)
 
 
-class MonthlySequence(Sequence, name="monthly"):
+class MonthlySequence(Sequence, seqname="monthly"):
     """Sequence of dates happening on given days of each month
 
     Any ``(month, day)`` tuple present in ``excludes`` will be skipped
@@ -346,7 +346,7 @@ class MonthlySequence(Sequence, name="monthly"):
         return cls(seq_dict["days"], excludes=excludes)
 
 
-class YearlySequence(Sequence, name="yearly"):
+class YearlySequence(Sequence, seqname="yearly"):
     """Sequence of dates happening on given days of each year (in (month, day) format)
 
     Can be created from a `dict` with items:
