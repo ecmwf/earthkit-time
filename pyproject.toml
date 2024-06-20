@@ -33,6 +33,9 @@ test = [
 earthkit-climdates = "earthkit.time.cli.climatology:main"
 earthkit-dateseq = "earthkit.time.cli.sequence:main"
 
+[project.urls]
+Homepage = "https://github.com/ecmwf/earthkit-time/"
+
 [tool.isort]
 profile = "black"
 
