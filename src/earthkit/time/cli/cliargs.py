@@ -1,6 +1,7 @@
 import argparse
 from typing import List, Tuple
 
+from ..calendar import Weekday, parse_date, parse_mmdd, to_weekday
 from ..sequence import (
     DailySequence,
     MonthlySequence,
@@ -8,8 +9,6 @@ from ..sequence import (
     WeeklySequence,
     YearlySequence,
 )
-
-from ..calendar import Weekday, parse_date, parse_mmdd, to_weekday
 
 
 def weekly_days(arg: str) -> List[Weekday]:

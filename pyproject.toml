@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "earthkit-time"
-version = "0.1.0"
+version = "0.1.1"
 requires-python = ">= 3.8"
 description = "Date and time manipulation routines for the use of weather data"
 license = {file = "LICENSE"}
@@ -26,12 +26,15 @@ dependencies = ["pyyaml"]
 
 [project.optional-dependencies]
 test = [
-    "pytest",
+    "pytest >= 8.1",
 ]
 
 [project.scripts]
 earthkit-climdates = "earthkit.time.cli.climatology:main"
 earthkit-dateseq = "earthkit.time.cli.sequence:main"
+
+[project.urls]
+Homepage = "https://github.com/ecmwf/earthkit-time/"
 
 [tool.isort]
 profile = "black"
