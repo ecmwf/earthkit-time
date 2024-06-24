@@ -3,7 +3,13 @@ from typing import List, Optional
 
 from ..calendar import parse_date
 from .actions import ActionParser
-from .cliargs import SEQ_EPILOG, add_sequence_args, create_sequence
+from .cliargs import (
+    SEP_EPILOG,
+    SEQ_EPILOG,
+    add_sep_arg,
+    add_sequence_args,
+    create_sequence,
+)
 from .cliout import format_date, format_date_list
 
 
@@ -26,7 +32,8 @@ def seq_range_action(parser: argparse.ArgumentParser, args: argparse.Namespace):
                 args.to,
                 (not args.exclude_start),
                 (not args.exclude_end),
-            )
+            ),
+            sep=args.sep,
         )
     )
 
@@ -36,7 +43,11 @@ def seq_bracket_action(parser: argparse.ArgumentParser, args: argparse.Namespace
     if args.after is not None:
         num = (args.before, args.after)
     seq = create_sequence(parser, args)
-    print(format_date_list(seq.bracket(args.date, num, strict=(not args.inclusive))))
+    print(
+        format_date_list(
+            seq.bracket(args.date, num, strict=(not args.inclusive)), sep=args.sep
+        )
+    )
 
 
 def get_parser() -> argparse.ArgumentParser:
@@ -81,10 +92,11 @@ def get_parser() -> argparse.ArgumentParser:
         seq_range_action,
         help="compute the sequence dates that fall within a range",
         description="Compute the sequence dates that fall winthin the given range",
-        epilog=SEQ_EPILOG,
+        epilog=SEQ_EPILOG + "\n" + SEP_EPILOG,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     add_sequence_args(range_action)
+    add_sep_arg(range_action)
     range_action.add_argument("from", type=parse_date, help="starting date")
     range_action.add_argument("to", type=parse_date, help="ending date")
     range_action.add_argument(
@@ -99,10 +111,11 @@ def get_parser() -> argparse.ArgumentParser:
         seq_bracket_action,
         help="compute the sequence dates around a date",
         description="Compute the sequence dates around the given date",
-        epilog=SEQ_EPILOG,
+        epilog=SEQ_EPILOG + "\n" + SEP_EPILOG,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     add_sequence_args(bracket_action)
+    add_sep_arg(bracket_action)
     bracket_action.add_argument("date", type=parse_date, help="reference date")
     bracket_action.add_argument(
         "before",

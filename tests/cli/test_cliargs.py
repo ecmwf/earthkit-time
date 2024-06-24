@@ -6,6 +6,7 @@ import pytest
 from earthkit.time.calendar import Weekday
 from earthkit.time.cli.cliargs import (
     Tuple,
+    escaped_str,
     int_list,
     list_arg,
     weekly_days,
@@ -86,3 +87,19 @@ def test_yearly_days(arg: str, expected: Union[List[Tuple[int, int]], str]):
 )
 def test_list_arg(arg: str, expected: List[str]):
     parsing_test(arg, expected, list_arg)
+
+
+@pytest.mark.parametrize(
+    "arg, expected",
+    [
+        ("", ""),
+        ("!", "!"),
+        ("hello", "hello"),
+        ("a\\nb", "a\nb"),
+        ("\\0\\a\\b\\f\\n\\r\\t\\v\\117\\x4b\\\\", "\0\a\b\f\n\r\t\vOK\\"),
+        ("\\x\\a", "\\x\a"),
+        ("\\1", "\\1"),
+    ],
+)
+def test_escaped_str(arg: str, expected: str):
+    assert escaped_str(arg) == expected

@@ -1,4 +1,5 @@
 import argparse
+import re
 from typing import List, Tuple
 
 from ..calendar import Weekday, parse_date, parse_mmdd, to_weekday
@@ -113,3 +114,48 @@ def create_sequence(
         parser.error(str(e))
     assert seq is not None, "Unsupported sequence?!"
     return seq
+
+
+def _eval_escape(m: re.Match) -> str:
+    simple = {
+        "\\": "\\",
+        "0": "\x00",
+        "a": "\a",
+        "b": "\b",
+        "f": "\f",
+        "n": "\n",
+        "r": "\r",
+        "t": "\t",
+        "v": "\v",
+    }
+    val = m.group(1)
+    if len(val) == 1:
+        return simple[val]
+    if val[0] in "xX":
+        return chr(int(val[1:], 16))
+    return chr(int(val, 8))
+
+
+def escaped_str(arg: str) -> str:
+    return re.sub(
+        r"\\([\\0abfnrtv]|x[0-9a-f]{2}|[0-3][0-7]{2})", _eval_escape, arg, flags=re.I
+    )
+
+
+SEP_EPILOG = """
+SEPARATORS: separators can be any string of characters, with some escape
+sequences evaluated:
+* \\0, \\a, \\b, \\f, \\n, \\r, \\t, \\v: NUL, BEL, BS, FF, LF, CR, TAB, VT
+* \\xhh: character with hex value hh
+* \\ooo: character with octal value ooo
+* \\\\: literal \\
+"""
+
+
+def add_sep_arg(parser: argparse.ArgumentParser):
+    parser.add_argument(
+        "--sep",
+        type=escaped_str,
+        default="\n",
+        help="output separator, see SEPARATORS for special values",
+    )
