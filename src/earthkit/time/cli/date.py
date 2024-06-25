@@ -51,4 +51,3 @@ def main(sys_args: Optional[List[str]] = None):
 
 if __name__ == "__main__":
     main()
-
