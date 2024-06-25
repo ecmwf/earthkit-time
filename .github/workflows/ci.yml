@@ -34,7 +34,8 @@ jobs:
   # Build downstream packages on HPC
   downstream-ci-hpc:
     name: downstream-ci-hpc
-    if: ${{ !github.event.pull_request.head.repo.fork && github.event.action != 'labeled' || github.event.label.name == 'approved-for-ci' }}
+    # if: ${{ !github.event.pull_request.head.repo.fork && github.event.action != 'labeled' || github.event.label.name == 'approved-for-ci' }}
+    if: ${{ false }}
     uses: ecmwf-actions/downstream-ci/.github/workflows/downstream-ci-hpc.yml@add-earthkit-time
     with:
       earthkit-time: ecmwf/earthkit-time@${{ github.event.pull_request.head.sha || github.sha }}
