@@ -109,7 +109,7 @@ def test_seq_prev(args: dict, expected: str, capsys: pytest.CaptureFixture[str])
     [
         pytest.param(
             {"daily": True, "from": date(2008, 3, 12), "to": date(2008, 3, 20)},
-            "/".join(f"200803{d:02d}" for d in range(12, 21)),
+            "\n".join(f"200803{d:02d}" for d in range(12, 21)),
             id="daily",
         ),
         pytest.param(
@@ -119,7 +119,7 @@ def test_seq_prev(args: dict, expected: str, capsys: pytest.CaptureFixture[str])
                 "to": date(2010, 10, 17),
                 "exclude_start": True,
             },
-            "/".join(
+            "\n".join(
                 f"2010{m:02d}{d:02d}"
                 for m, d in [(9, 12), (9, 19), (9, 26), (10, 3), (10, 10), (10, 17)]
             ),
@@ -132,7 +132,7 @@ def test_seq_prev(args: dict, expected: str, capsys: pytest.CaptureFixture[str])
                 "to": date(2012, 10, 12),
                 "exclude_end": True,
             },
-            "/".join(
+            "\n".join(
                 f"2012{m:02d}{d:02d}"
                 for m, d in [
                     (7, 10),
@@ -154,10 +154,29 @@ def test_seq_prev(args: dict, expected: str, capsys: pytest.CaptureFixture[str])
                 "exclude_start": True,
                 "exclude_end": True,
             },
-            "/".join(
+            "\n".join(
                 f"{y:04d}{m:02d}{d:02d}" for y, m, d in [(2014, 1, 15), (2014, 7, 20)]
             ),
             id="yearly-nostart-noend",
+        ),
+        pytest.param(
+            {
+                "daily": True,
+                "from": date(2016, 11, 2),
+                "to": date(2016, 11, 6),
+                "sep": " ",
+            },
+            " ".join(
+                f"{y:04d}{m:02d}{d:02d}"
+                for y, m, d in [
+                    (2016, 11, 2),
+                    (2016, 11, 3),
+                    (2016, 11, 4),
+                    (2016, 11, 5),
+                    (2016, 11, 6),
+                ]
+            ),
+            id="daily-sep",
         ),
     ],
 )
@@ -170,6 +189,7 @@ def test_seq_range(args: dict, expected: str, capsys: pytest.CaptureFixture[str]
     args.setdefault("exclude", [])
     args.setdefault("exclude_start", False)
     args.setdefault("exclude_end", False)
+    args.setdefault("sep", "\n")
     args = argparse.Namespace(**args)
     seq_range_action(parser, args)
     captured = capsys.readouterr()
@@ -180,7 +200,7 @@ def test_seq_range(args: dict, expected: str, capsys: pytest.CaptureFixture[str]
     "args, expected",
     [
         pytest.param(
-            {"daily": True, "date": date(2015, 3, 26)}, "20150325/20150327", id="daily"
+            {"daily": True, "date": date(2015, 3, 26)}, "20150325\n20150327", id="daily"
         ),
         pytest.param(
             {
@@ -188,14 +208,14 @@ def test_seq_range(args: dict, expected: str, capsys: pytest.CaptureFixture[str]
                 "date": date(2016, 10, 4),
                 "before": 2,
             },
-            "/".join(
+            "\n".join(
                 f"2016{m:02d}{d:02d}" for m, d in [(9, 28), (10, 1), (10, 5), (10, 8)]
             ),
             id="weekly-2",
         ),
         pytest.param(
             {"monthly": [14], "date": date(2017, 7, 14), "before": 2, "after": 1},
-            "/".join(f"2017{m:02d}14" for m in [5, 6, 8]),
+            "\n".join(f"2017{m:02d}14" for m in [5, 6, 8]),
             id="monthly-2-1",
         ),
         pytest.param(
@@ -206,11 +226,16 @@ def test_seq_range(args: dict, expected: str, capsys: pytest.CaptureFixture[str]
                 "after": 2,
                 "inclusive": True,
             },
-            "/".join(
+            "\n".join(
                 f"{y:04d}{m:02d}{d:02d}"
                 for y, m, d in [(2019, 2, 2), (2019, 3, 3), (2019, 4, 4), (2020, 1, 1)]
             ),
             id="yearly-1-2-inc",
+        ),
+        pytest.param(
+            {"daily": True, "date": date(2020, 8, 29), "sep": ", "},
+            "20200828, 20200830",
+            id="daily-sep",
         ),
     ],
 )
@@ -224,6 +249,7 @@ def test_seq_bracket(args: dict, expected: str, capsys: pytest.CaptureFixture[st
     args.setdefault("before", 1)
     args.setdefault("after", None)
     args.setdefault("inclusive", False)
+    args.setdefault("sep", "\n")
     args = argparse.Namespace(**args)
     seq_bracket_action(parser, args)
     captured = capsys.readouterr()

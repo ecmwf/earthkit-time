@@ -4,13 +4,19 @@ from typing import List, Optional
 from ..calendar import parse_date
 from ..climatology import date_range, model_climate_dates
 from .actions import ActionParser
-from .cliargs import SEQ_EPILOG, add_sequence_args, create_sequence
+from .cliargs import (
+    SEP_EPILOG,
+    SEQ_EPILOG,
+    add_sep_arg,
+    add_sequence_args,
+    create_sequence,
+)
 from .cliout import format_date_list
 
 
 def date_range_action(parser: argparse.ArgumentParser, args: argparse.Namespace):
     dates = date_range(args.date, args.start, args.end)
-    print(format_date_list(dates))
+    print(format_date_list(dates, sep=args.sep))
 
 
 def model_climate_action(parser: argparse.ArgumentParser, args: argparse.Namespace):
@@ -21,7 +27,7 @@ def model_climate_action(parser: argparse.ArgumentParser, args: argparse.Namespa
     after = args.after
     seq = create_sequence(parser, args)
     dates = model_climate_dates(reference, start, end, before, after, seq)
-    print(format_date_list(dates))
+    print(format_date_list(dates, sep=args.sep))
 
 
 def get_parser() -> argparse.ArgumentParser:
@@ -34,6 +40,8 @@ def get_parser() -> argparse.ArgumentParser:
         date_range_action,
         help="compute climatological date ranges",
         description="Compute climatological date ranges, one day per year in a given range",
+        epilog=SEP_EPILOG,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     range_action.add_argument("date", type=parse_date, help="reference date")
 
@@ -51,6 +59,8 @@ def get_parser() -> argparse.ArgumentParser:
     )
     range_end_group.add_argument("--to-year", type=int, dest="end", help="ending year")
 
+    add_sep_arg(range_action)
+
     mclim_action = parser.add_action(
         "mclim",
         model_climate_action,
@@ -60,7 +70,7 @@ def get_parser() -> argparse.ArgumentParser:
         This combines a climatological range (same day in multiple years) and a
         recurring source (e.g. twice a week).
         """,
-        epilog=SEQ_EPILOG,
+        epilog=SEQ_EPILOG + "\n" + SEP_EPILOG,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     mclim_action.add_argument("date", type=parse_date, help="reference date")
@@ -95,6 +105,7 @@ def get_parser() -> argparse.ArgumentParser:
     )
 
     add_sequence_args(mclim_action)
+    add_sep_arg(mclim_action)
 
     return parser
 
