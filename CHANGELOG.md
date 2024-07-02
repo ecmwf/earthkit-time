@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased changes
+## 0.1.2 - 2024-07-02
 
 * Change the default separator to a newline for command-line tools
 * Add `--sep` options to the actions printing lists
