@@ -6,6 +6,7 @@ import pytest
 from earthkit.time.calendar import Weekday
 from earthkit.time.cli.sequence import (
     seq_bracket_action,
+    seq_nearest_action,
     seq_next_action,
     seq_prev_action,
     seq_range_action,
@@ -100,6 +101,56 @@ def test_seq_prev(args: dict, expected: str, capsys: pytest.CaptureFixture[str])
     args.setdefault("inclusive", False)
     args = argparse.Namespace(**args)
     seq_prev_action(parser, args)
+    captured = capsys.readouterr()
+    assert captured.out == expected + "\n"
+
+
+@pytest.mark.parametrize(
+    "args, expected",
+    [
+        pytest.param(
+            {"daily": True, "date": date(2006, 7, 26)}, "20060726", id="daily"
+        ),
+        pytest.param(
+            {"daily": True, "date": date(2017, 3, 30), "exclude": ["30", "31"]},
+            "20170329",
+            id="daily-excludes",
+        ),
+        pytest.param(
+            {
+                "weekly": [Weekday.TUESDAY, Weekday.THURSDAY, Weekday.SATURDAY],
+                "date": date(2013, 10, 23),
+                "resolve": "previous",
+            },
+            "20131022",
+            id="weekly",
+        ),
+        pytest.param(
+            {"monthly": [1, 15], "date": date(1995, 8, 25)},
+            "19950901",
+            id="monthly",
+        ),
+        pytest.param(
+            {
+                "yearly": [(1, 4), (12, 25)],
+                "date": date(2009, 12, 30),
+                "resolve": "next",
+            },
+            "20100104",
+            id="yearly",
+        ),
+    ],
+)
+def test_seq_nearest(args: dict, expected: str, capsys: pytest.CaptureFixture[str]):
+    parser = argparse.ArgumentParser()
+    args.setdefault("daily", False)
+    args.setdefault("weekly", None)
+    args.setdefault("monthly", None)
+    args.setdefault("yearly", None)
+    args.setdefault("exclude", [])
+    args.setdefault("resolve", "previous")
+    args = argparse.Namespace(**args)
+    seq_nearest_action(parser, args)
     captured = capsys.readouterr()
     assert captured.out == expected + "\n"
 
