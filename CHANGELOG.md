@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.3 - 2024-07-19
+
+* Add `Sequence.nearest` and `earthkit-dateseq nearest`
+
 ## 0.1.2 - 2024-07-02
 
 * Change the default separator to a newline for command-line tools
