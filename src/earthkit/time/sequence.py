@@ -51,6 +51,26 @@ class Sequence(ABC):
             current -= oneday
         return current
 
+    def nearest(self, reference: date, resolve: str = "previous") -> date:
+        """Return the date closest to ``reference`` in the sequence.
+        In case this is ambiguous, ``resolve`` defines which date to use
+        (``"previous"`` or ``"next"``).
+        """
+        if resolve not in ["previous", "next"]:
+            raise ValueError('`resolve` must be either "previous" or "next"')
+        before = self.previous(reference, strict=False)
+        after = self.next(reference, strict=False)
+        delta_b = reference - before
+        delta_a = after - reference
+        if delta_b < delta_a:
+            return before
+        elif delta_b > delta_a:
+            return after
+        elif resolve == "previous":
+            return before
+        else:
+            return after
+
     def range(
         self,
         start: date,
