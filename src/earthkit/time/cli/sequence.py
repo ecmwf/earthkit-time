@@ -23,6 +23,11 @@ def seq_prev_action(parser: argparse.ArgumentParser, args: argparse.Namespace):
     print(format_date(seq.previous(args.date, strict=(not args.inclusive))))
 
 
+def seq_nearest_action(parser: argparse.ArgumentParser, args: argparse.Namespace):
+    seq = create_sequence(parser, args)
+    print(format_date(seq.nearest(args.date, resolve=args.resolve)))
+
+
 def seq_range_action(parser: argparse.ArgumentParser, args: argparse.Namespace):
     seq = create_sequence(parser, args)
     print(
@@ -85,6 +90,23 @@ def get_parser() -> argparse.ArgumentParser:
         "--inclusive",
         action="store_true",
         help="if the given date is in the sequence, return it",
+    )
+
+    nearest_action = parser.add_action(
+        "nearest",
+        seq_nearest_action,
+        help="compute the nearest date in the given sequence",
+        description="Compute the nearest date in the given sequence",
+        epilog=SEQ_EPILOG,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    nearest_action.add_argument("date", type=parse_date, help="reference date")
+    add_sequence_args(nearest_action)
+    nearest_action.add_argument(
+        "--resolve",
+        choices=("previous", "next"),
+        default="previous",
+        help="return this date in case of a tie",
     )
 
     range_action = parser.add_action(
