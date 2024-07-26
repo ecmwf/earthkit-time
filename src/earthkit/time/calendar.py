@@ -6,6 +6,7 @@ from typing import Tuple, Union
 
 class Weekday(IntEnum):
     """:class:`enum.IntEnum` representing week days"""
+
     MONDAY = 0
     TUESDAY = 1
     WEDNESDAY = 2
@@ -84,6 +85,7 @@ def day_exists(year: int, month: int, day: int) -> bool:
 
 class MonthInYear:
     """Represent a given month in a year"""
+
     year: int
     month: int
 
