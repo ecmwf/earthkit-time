@@ -21,13 +21,13 @@ def date_range(
 
     Parameters
     ----------
-    reference: date
+    reference: :class:`datetime.date`
         Reference date setting the fixed part in the sequence (e.g., month and day
         for a yearly recurrence)
-    start: date or int
+    start: :class:`datetime.date` or int
         Start of the period. Either a full date or a meaningful identifier (e.g.
         year for a yearly recurrence)
-    end: date or int
+    end: :class:`datetime.date` or int
         End of the period. Included in the sequence unless ``include_endpoint`` is
         ``False``
     recurrence: "yearly"
@@ -37,7 +37,7 @@ def date_range(
 
     Returns
     -------
-    date iterator
+    :class:`datetime.date` iterator
         Sequence of dates
 
     Examples
@@ -86,23 +86,23 @@ def model_climate_dates(
 
     Parameters
     ----------
-    reference: date
+    reference: :class:`datetime.date`
         Reference date for the climate
-    start: date or int
+    start: :class:`datetime.date` or int
         Start of the climatological period. Either a full date or a year
-    end: date or int
+    end: :class:`datetime.date` or int
         End of the climatological period. Either a full date or a year
-    before: timedelta or int
+    before: :class:`datetime.timedelta` or int
         Cut-off before the reference date. Either a timedelta or a number of
         days
-    after: timedelta or int
+    after: :class:`datetime.timedelta` or int
         Cut-off after the reference date. Either a timedelta or a number of days
-    sequence: `Sequence`
+    sequence: :class:`earthkit.time.sequence.Sequence`
         Sequence of available dates in the reference set
 
     Returns
     -------
-    date iterator
+    :class:`datetime.date` iterator
         Sequence of dates
 
     Examples

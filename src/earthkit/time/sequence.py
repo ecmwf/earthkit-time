@@ -98,7 +98,7 @@ class Sequence(ABC):
 
         Parameters
         ----------
-        reference: date
+        reference: :class:`datetime.date`
             Reference date
         num: int or (int, int) tuple
             Number of dates to include either side of ``reference``. If a single
@@ -134,8 +134,8 @@ class Sequence(ABC):
         """Create a specific sequence from the given dictionary
 
         Dictionary contents can vary depending on the sequence. Frequent items are:
-        * days: list of recurring days
-        * excludes: specification of which days to skip
+        * ``days``: list of recurring days
+        * ``excludes``: specification of which days to skip
         """
         raise NotImplementedError
 
@@ -161,10 +161,11 @@ class Sequence(ABC):
         ``yearly``.
 
         Dictionary contents can vary depending on the sequence. Frequent items are:
-        * days: list of recurring days
-        * excludes: specification of which days to skip
 
-        Raises `ValueError` if the type is unknown
+        * ``days``: list of recurring days
+        * ``excludes``: specification of which days to skip
+
+        Raises :class:`ValueError` if the type is unknown
         """
         if "type" not in seq_dict:
             raise ValueError("Sequence dictionary must contain `type` key")
@@ -181,7 +182,7 @@ class Sequence(ABC):
         ``earthkit.time.data.sequences`` or ``EARTHKIT_TIME_SEQ_PATH``,
         without the extension), or the path to a YAML file
 
-        Raises `FileNotFoundError` if no corresponding resource is found
+        Raises :class:`FileNotFoundError` if no corresponding resource is found
         """
         path = name if os.path.isfile(name) else None
         seq_dict = load_yaml(
@@ -197,7 +198,8 @@ class DailySequence(Sequence, seqname="daily"):
 
     Any day number (in the month) present in ``excludes`` will be skipped
 
-    Can be created from a `dict` with items:
+    Can be created from a :class:`dict` with items:
+
     * ``type``: ``"daily"``
     * ``excludes``: (list of int, optional) days of the month to exclude
     """
@@ -219,7 +221,8 @@ class DailySequence(Sequence, seqname="daily"):
 class WeeklySequence(Sequence, seqname="weekly"):
     """Sequence of dates happening on given days of each week
 
-    Can be created from a `dict` with items:
+    Can be created from a :class:`dict` with items:
+
     * ``type``: ``"weekly"``
     * ``days``: (int, str, list of int, list of str) days of the week, either
       numeric (0 = Monday, ..., 6 = Sunday) or unambiguous prefixes of names
@@ -283,7 +286,8 @@ class MonthlySequence(Sequence, seqname="monthly"):
 
     Any ``(month, day)`` tuple present in ``excludes`` will be skipped
 
-    Can be created from a `dict` with items:
+    Can be created from a :class:`dict` with items:
+
     * ``type``: ``"monthly"``
     * ``days``: (int, list of int) days of the month (1-31)
     * ``excludes``: (list of pairs of int, list of str, optional) days of the
@@ -369,7 +373,8 @@ class MonthlySequence(Sequence, seqname="monthly"):
 class YearlySequence(Sequence, seqname="yearly"):
     """Sequence of dates happening on given days of each year (in (month, day) format)
 
-    Can be created from a `dict` with items:
+    Can be created from a :class:`dict` with items:
+
     * ``type``: ``"yearly"``
     * ``days``: (str, pair of int, list of str, list of pairs of int) days of the year
       either in "MMDD" or in (month, day) form (1-12, 1-31)

@@ -25,6 +25,10 @@ classifiers = [
 dependencies = ["pyyaml"]
 
 [project.optional-dependencies]
+docs = [
+    "Sphinx",
+    "sphinx-rtd-theme",
+]
 test = [
     "pytest >= 8.1",
 ]
