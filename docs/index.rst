@@ -8,10 +8,16 @@ Welcome to earthkit-time's documentation!
    be scrapped. DO NOT use this software in any project/software that is
    operational.
 
+
+earthkit-time is a library to manipulate dates and time for weather forecasting.
+The library also exposes a command-line interface to its tools.
+
+
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Contents:
 
+   guide/index
    api/index
    cli/index
 
