@@ -7,6 +7,10 @@ operational.
 
 Date and time manipulation routines for the use of weather data
 
+## Documentation
+
+The documentation can be found at https://earthkit-time.readthedocs.io.
+
 ## Python API
 
 ### When is the next Tuesday?
