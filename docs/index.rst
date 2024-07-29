@@ -20,6 +20,7 @@ The library also exposes a command-line interface to its tools.
    guide/index
    api/index
    cli/index
+   changelog
 
 
 Indices and tables

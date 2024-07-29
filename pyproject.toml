@@ -26,6 +26,7 @@ dependencies = ["pyyaml"]
 
 [project.optional-dependencies]
 docs = [
+    "myst-parser",
     "Sphinx",
     "sphinx-rtd-theme",
 ]
