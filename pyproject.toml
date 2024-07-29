@@ -41,6 +41,7 @@ earthkit-date = "earthkit.time.cli.date:main"
 
 [project.urls]
 Homepage = "https://github.com/ecmwf/earthkit-time/"
+Documentation = "https://earthkit-time.readthedocs.io"
 
 [tool.isort]
 profile = "black"
