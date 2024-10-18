@@ -66,9 +66,12 @@ previous`` or ``earthkit-dateseq next``:
    20240515
    $ earthkit-dateseq next --weekly wed/fri --inclusive 20240510
    20240510
+   $ earthkit-dateseq next --weekly wed/fri --skip 3 20240510
+   20240524
 
 If the given date is in the sequence, the default behaviour is to skip to the
-previous or next one. To keep it, add the ``--inclusive`` option.
+previous or next one. To keep it, add the ``--inclusive`` option. More dates can
+be skipped with the ``--skip`` option.
 
 Similarly, the sequence date closest to a given date can be computed using
 ``earthkit-dateseq nearest``:
