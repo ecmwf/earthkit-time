@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased changes
+
+* Add `--skip` options to `earthkit-dateseq previous/next`
+
 ## 0.1.3 - 2024-07-19
 
 * Add `Sequence.nearest` and `earthkit-dateseq nearest`
