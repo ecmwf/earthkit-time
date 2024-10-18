@@ -15,12 +15,18 @@ from .cliout import format_date, format_date_list
 
 def seq_next_action(parser: argparse.ArgumentParser, args: argparse.Namespace):
     seq = create_sequence(parser, args)
-    print(format_date(seq.next(args.date, strict=(not args.inclusive))))
+    new = seq.next(args.date, strict=(not args.inclusive))
+    for _ in range(args.skip):
+        new = seq.next(new, strict=True)
+    print(format_date(new))
 
 
 def seq_prev_action(parser: argparse.ArgumentParser, args: argparse.Namespace):
     seq = create_sequence(parser, args)
-    print(format_date(seq.previous(args.date, strict=(not args.inclusive))))
+    new = seq.previous(args.date, strict=(not args.inclusive))
+    for _ in range(args.skip):
+        new = seq.previous(new, strict=True)
+    print(format_date(new))
 
 
 def seq_nearest_action(parser: argparse.ArgumentParser, args: argparse.Namespace):
@@ -75,6 +81,12 @@ def get_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="if the given date is in the sequence, return it",
     )
+    next_action.add_argument(
+        "--skip",
+        type=int,
+        default=0,
+        help="if set, skip over that number of dates",
+    )
 
     prev_action = parser.add_action(
         "previous",
@@ -90,6 +102,12 @@ def get_parser() -> argparse.ArgumentParser:
         "--inclusive",
         action="store_true",
         help="if the given date is in the sequence, return it",
+    )
+    prev_action.add_argument(
+        "--skip",
+        type=int,
+        default=0,
+        help="if set, skip over that number of dates",
     )
 
     nearest_action = parser.add_action(

@@ -65,14 +65,19 @@ Sequences can be described according to their type, using the corresponding argu
 
 Usage::
 
-   earthkit-dateseq previous <sequence> [--inclusive] <date>
-   earthkit-dateseq next <sequence> [--inclusive] <date>
+   earthkit-dateseq previous <sequence> [--inclusive] [--skip <skip>] <date>
+   earthkit-dateseq next <sequence> [--inclusive] [--skip <skip>] <date>
 
 The sequence is described as documented in :ref:`cli_seq`.
 
 .. option:: --inclusive
 
    If this flag is set and the given date is in the sequence, it is returned.
+
+.. option:: --skip <skip>
+
+   If set, skip over the given number of dates. If :option:`--inclusive` is not
+   set and the date is in the sequence, it is skipped on top of that.
 
 .. option:: date
 

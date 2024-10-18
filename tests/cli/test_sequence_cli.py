@@ -48,6 +48,26 @@ from earthkit.time.cli.sequence import (
             "20030228",
             id="yearly-excludes-inc",
         ),
+        pytest.param(
+            {"monthly": [5, 20], "skip": 2, "date": date(2007, 4, 3)},
+            "20070505",
+            id="skip",
+        ),
+        pytest.param(
+            {"monthly": [5, 20], "skip": 2, "date": date(2007, 4, 5)},
+            "20070520",
+            id="skip-exc",
+        ),
+        pytest.param(
+            {
+                "monthly": [5, 20],
+                "skip": 2,
+                "inclusive": True,
+                "date": date(2007, 4, 5),
+            },
+            "20070505",
+            id="skip-inc",
+        ),
     ],
 )
 def test_seq_next(args: dict, expected: str, capsys: pytest.CaptureFixture[str]):
@@ -58,6 +78,7 @@ def test_seq_next(args: dict, expected: str, capsys: pytest.CaptureFixture[str])
     args.setdefault("yearly", None)
     args.setdefault("exclude", [])
     args.setdefault("inclusive", False)
+    args.setdefault("skip", 0)
     args = argparse.Namespace(**args)
     seq_next_action(parser, args)
     captured = capsys.readouterr()
@@ -89,6 +110,26 @@ def test_seq_next(args: dict, expected: str, capsys: pytest.CaptureFixture[str])
             "20061015",
             id="monthly",
         ),
+        pytest.param(
+            {"monthly": [5, 20], "skip": 2, "date": date(2007, 4, 10)},
+            "20070305",
+            id="skip",
+        ),
+        pytest.param(
+            {"monthly": [5, 20], "skip": 2, "date": date(2007, 4, 5)},
+            "20070220",
+            id="skip-exc",
+        ),
+        pytest.param(
+            {
+                "monthly": [5, 20],
+                "skip": 2,
+                "inclusive": True,
+                "date": date(2007, 4, 5),
+            },
+            "20070305",
+            id="skip-inc",
+        ),
     ],
 )
 def test_seq_prev(args: dict, expected: str, capsys: pytest.CaptureFixture[str]):
@@ -99,6 +140,7 @@ def test_seq_prev(args: dict, expected: str, capsys: pytest.CaptureFixture[str])
     args.setdefault("yearly", None)
     args.setdefault("exclude", [])
     args.setdefault("inclusive", False)
+    args.setdefault("skip", 0)
     args = argparse.Namespace(**args)
     seq_prev_action(parser, args)
     captured = capsys.readouterr()
