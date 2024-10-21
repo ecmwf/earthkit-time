@@ -5,6 +5,8 @@ from typing import Tuple, Union
 
 
 class Weekday(IntEnum):
+    """:class:`enum.IntEnum` representing week days"""
+
     MONDAY = 0
     TUESDAY = 1
     WEDNESDAY = 2
@@ -82,6 +84,8 @@ def day_exists(year: int, month: int, day: int) -> bool:
 
 
 class MonthInYear:
+    """Represent a given month in a year"""
+
     year: int
     month: int
 
@@ -103,14 +107,17 @@ class MonthInYear:
         return True
 
     def length(self) -> int:
+        """Returns the number of days in the given month"""
         return month_length(self.year, self.month)
 
     def next(self) -> "MonthInYear":
+        """Return the following month"""
         d, m = divmod(self.month, 12)
         m += 1
         return MonthInYear(self.year + d, m)
 
     def previous(self) -> "MonthInYear":
+        """Return the previous month"""
         d, m = divmod(self.month - 2, 12)
         m += 1
         return MonthInYear(self.year + d, m)
@@ -139,6 +146,7 @@ def parse_mmdd(arg: Union[Tuple[int, int], str]) -> Tuple[int, int]:
 
 
 def parse_date(arg: Union[str, Tuple[int, int, int]]) -> date:
+    """Convert triples of ints or YYYYMMDD strings into date objects"""
     if not isinstance(arg, str):
         y, m, d = arg
         if not day_exists(y, m, d):
