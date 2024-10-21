@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased changes
+## 0.1.4 - 2024-10-21
 
 * Add `--skip` options to `earthkit-dateseq previous/next`
 
