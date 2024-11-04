@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.6 - 2024-11-04
+
+* Update project metadata
+
 ## 0.1.5 - 2024-11-04
 
 * Fix `ImportError` with Python >= 3.13
