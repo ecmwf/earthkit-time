@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.5 - 2024-11-04
+
+* Fix `ImportError` with Python >= 3.13
+
 ## 0.1.4 - 2024-10-21
 
 * Add `--skip` options to `earthkit-dateseq previous/next`
