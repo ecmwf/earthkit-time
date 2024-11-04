@@ -1,8 +1,8 @@
 import enum
 import os
 import pathlib
-from importlib import resources
 import types
+from importlib import resources
 from typing import Optional, TextIO, Tuple, Union
 
 import yaml
