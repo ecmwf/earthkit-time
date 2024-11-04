@@ -2,9 +2,13 @@ import enum
 import os
 import pathlib
 from importlib import resources
-from typing import Optional, TextIO, Tuple
+import types
+from typing import Optional, TextIO, Tuple, Union
 
 import yaml
+
+# importlib.resources.Packages is removed from Python >= 3.13
+Package = Union[types.ModuleType, str]
 
 PACKAGE = "earthkit.time.data"
 
@@ -17,7 +21,7 @@ def _extract_package(path: str) -> Tuple[str, str]:
     return (PACKAGE + "." + ".".join(parts[:-1])), parts[-1]
 
 
-def _is_resource(package: resources.Package, name: str) -> bool:
+def _is_resource(package: Package, name: str) -> bool:
     if hasattr(resources, "files"):  # Python >= 3.9
         return resources.files(package).joinpath(name).is_file()
     else:
@@ -25,8 +29,8 @@ def _is_resource(package: resources.Package, name: str) -> bool:
 
 
 def _open_text(
-    package: resources.Package,
-    resource: resources.Resource,
+    package: Package,
+    resource: str,
     encoding: str = "utf-8",
     errors: str = "strict",
 ) -> TextIO:
