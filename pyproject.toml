@@ -3,8 +3,8 @@ requires = ["setuptools>=65", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
+dynamic = ["version"]
 name = "earthkit-time"
-version = "0.1.6"
 requires-python = ">= 3.8"
 description = "Date and time manipulation routines for the use of weather data"
 license = {file = "LICENSE"}
@@ -57,6 +57,9 @@ testpaths = [
     "tests",
 ]
 consider_namespace_packages = true
+
+[tool.setuptools.dynamic]
+version = {attr = "earthkit.time.__version__"}
 
 [tool.setuptools.packages.find]
 where = ["src"]

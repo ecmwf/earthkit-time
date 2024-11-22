@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased changes
+
+* Export version as `earthkit.time.__version__`
+
 ## 0.1.6 - 2024-11-04
 
 * Update project metadata

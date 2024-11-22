@@ -7,7 +7,10 @@ from .sequence import (
     YearlySequence,
 )
 
+__version__ = "0.1.6"
+
 __all__ = [
+    "__version__",
     "date_range",
     "model_climate_dates",
     "DailySequence",
