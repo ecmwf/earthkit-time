@@ -4,6 +4,7 @@ import pytest
 
 from earthkit.time import date_range, model_climate_dates
 from earthkit.time.calendar import MONDAY, THURSDAY
+from earthkit.time.climatology import RelativeYear
 from earthkit.time.sequence import MonthlySequence, WeeklySequence
 
 
@@ -134,4 +135,19 @@ def test_model_climate_dates():
         date(y, m, d)
         for y in range(2020, 2024)
         for m, d in [(2, 21), (2, 25), (3, 1), (3, 5), (3, 9)]
+    ]
+
+    assert list(
+        model_climate_dates(
+            date(2024, 1, 1),
+            RelativeYear(-5),
+            RelativeYear(-2),
+            3,
+            3,
+            MonthlySequence(range(1, 32, 2), excludes=[(2, 29)]),
+        )
+    ) == [
+        date(y - (1 if m == 12 else 0), m, d)
+        for y in range(2019, 2023)
+        for m, d in [(12, 29), (12, 31), (1, 1), (1, 3)]
     ]

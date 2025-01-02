@@ -21,7 +21,7 @@ here, as follows::
 
 Compute climatological date ranges, one day per year in a given range::
 
-   earthkit-climdates range [--sep <sep>] (--from-date <start> | --from-year <start>) (--to-date <end> | --to-year <end>) <date>
+   earthkit-climdates range [--sep <sep>] (--from-date <start> | --from-year <start> | --from-rel-year <start>) (--to-date <end> | --to-year <end> | --to-rel-year <end>) <date>
 
 The list is printed using the given separator, as documented in :ref:`cli_sep`.
 
@@ -33,6 +33,11 @@ The list is printed using the given separator, as documented in :ref:`cli_sep`.
 
    Return dates starting from this year
 
+.. option:: --from-rel-year <start>
+
+   Return dates starting from this number after the year in :option:`date` (e.g.
+   ``--from-rel-year -5`` will start 5 years earlier)
+
 .. option:: --to-date <end>
 
    Return dates up to this one
@@ -40,6 +45,11 @@ The list is printed using the given separator, as documented in :ref:`cli_sep`.
 .. option:: --to-year <end>
 
    Return dates up to this year
+
+.. option:: --to-rel-year <end>
+
+   Return dates up to this number after the year in :option:`date` (e.g.
+   ``--to-rel-year -1`` will end in the year before)
 
 .. option:: date
 
@@ -54,7 +64,7 @@ recurring source (e.g. twice a week).
 
 Usage::
 
-   earthkit-climdates mclim <sequence> [--sep <sep>] (--from-date <start> | --from-year <start>) (--to-date <end> | --to-year <end>) --before <num> --after <num> <date>
+   earthkit-climdates mclim <sequence> [--sep <sep>] (--from-date <start> | --from-year <start> | --from-rel-year <start>) (--to-date <end> | --to-year <end> | --to-rel-year <end>) --before <num> --after <num> <date>
 
 The sequence is described as documented in :ref:`cli_seq`. The list is printed
 using the given separator, as documented in :ref:`cli_sep`.
@@ -66,6 +76,11 @@ using the given separator, as documented in :ref:`cli_sep`.
 .. option:: --from-year <start>
 
    Return dates starting from this year
+
+.. option:: --from-rel-year <start>
+
+   Return dates starting from this number after the year of the current date
+   (e.g.  ``--from-rel-year -5`` will start 5 years earlier)
 
 .. option:: --to-date <end>
 
@@ -82,6 +97,11 @@ using the given separator, as documented in :ref:`cli_sep`.
 .. option:: --after <num>
 
    Pick up all inputs up to *num* days after the chosen date
+
+.. option:: --to-rel-year <end>
+
+   Return dates up to this number after the year of the current date (e.g.
+   ``--to-rel-year -1`` will end in the year before)
 
 .. option:: date
 
