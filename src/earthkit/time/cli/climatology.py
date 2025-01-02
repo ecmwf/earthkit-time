@@ -11,6 +11,7 @@ from .cliargs import (
     add_sep_arg,
     add_sequence_args,
     create_sequence,
+    relative_year,
 )
 from .cliout import format_date_list
 
@@ -53,12 +54,24 @@ def get_parser() -> argparse.ArgumentParser:
     range_start_group.add_argument(
         "--from-year", type=int, dest="start", help="starting year"
     )
+    range_start_group.add_argument(
+        "--from-rel-year",
+        type=relative_year,
+        dest="start",
+        help="starting year, relative to `date`",
+    )
 
     range_end_group = range_action.add_mutually_exclusive_group(required=True)
     range_end_group.add_argument(
         "--to-date", type=parse_date, dest="end", help="ending date"
     )
     range_end_group.add_argument("--to-year", type=int, dest="end", help="ending year")
+    range_end_group.add_argument(
+        "--to-rel-year",
+        type=relative_year,
+        dest="end",
+        help="ending year, relative to `date`",
+    )
 
     add_sep_arg(range_action)
 
@@ -86,12 +99,24 @@ def get_parser() -> argparse.ArgumentParser:
     mclim_start_group.add_argument(
         "--from-year", type=int, dest="start", help="starting year"
     )
+    mclim_start_group.add_argument(
+        "--from-rel-year",
+        type=relative_year,
+        dest="start",
+        help="starting year, relative to `date`",
+    )
 
     mclim_end_group = mclim_action.add_mutually_exclusive_group(required=True)
     mclim_end_group.add_argument(
         "--to-date", type=parse_date, dest="end", help="ending date"
     )
     mclim_end_group.add_argument("--to-year", type=int, dest="end", help="ending year")
+    mclim_end_group.add_argument(
+        "--to-rel-year",
+        type=relative_year,
+        dest="end",
+        help="ending year, relative to `date`",
+    )
 
     mclim_action.add_argument(
         "--before",

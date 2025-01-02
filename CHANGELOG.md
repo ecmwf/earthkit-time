@@ -3,6 +3,7 @@
 ## Unreleased changes
 
 * Export version as `earthkit.time.__version__`
+* Add options for relative year range in climatology tools
 
 ## 0.1.6 - 2024-11-04
 

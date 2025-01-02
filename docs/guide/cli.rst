@@ -150,6 +150,8 @@ To get one date per year on the same day as a given reference, use
    20001023, 20011023, 20021023, 20031023, 20041023, 20051023
    $ earthkit-climdates range --sep ", " --from-date 20020608 --to-date 20040701 20050602
    20030602, 20040602
+   $ earthkit-climdates range --sep ", " --from-rel-year -3 --to-rel-year -1 20100805
+   20070805, 20080805, 20090805
 
 To combine yearly dates with multiple reference dates taken from a sequence, use
 ``earthkit-climdates mclim``:
@@ -158,3 +160,5 @@ To combine yearly dates with multiple reference dates taken from a sequence, use
 
    $ earthkit-climdates mclim --sep ", " --from-year 2018 --to-year 2020 --before 7 --after 7 --preset ecmwf-mon-thu 20230806
    20180731, 20180803, 20180807, 20180810, 20190731, 20190803, 20190807, 20190810, 20200731, 20200803, 20200807, 20200810
+   $ earthkit-climdates mclim --sep ", " --from-rel-year -7 --to-rel-year -4 --before 5 --after 5 --preset ecmwf-mon-thu 20230101
+   20151229, 20160102, 20160105, 20161229, 20170102, 20170105, 20171229, 20180102, 20180105, 20181229, 20190102, 20190105

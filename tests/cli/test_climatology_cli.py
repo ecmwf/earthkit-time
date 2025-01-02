@@ -6,6 +6,7 @@ import pytest
 
 from earthkit.time.calendar import Weekday
 from earthkit.time.cli.climatology import date_range_action, model_climate_action
+from earthkit.time.climatology import RelativeYear
 
 
 @pytest.mark.parametrize(
@@ -32,19 +33,29 @@ from earthkit.time.cli.climatology import date_range_action, model_climate_actio
             "\t",
             "20150607\t20160607\t20170607",
         ),
+        (
+            date(2025, 1, 1),
+            RelativeYear(-5),
+            RelativeYear(-2),
+            " ",
+            "20200101 20210101 20220101 20230101",
+        ),
     ],
 )
 def test_date_range_action(
     ref: date,
-    start: Union[date, int],
-    end: Union[date, int],
+    start: Union[date, int, RelativeYear],
+    end: Union[date, int, RelativeYear],
     sep: Optional[str],
     expected: str,
     capsys: pytest.CaptureFixture[str],
 ):
     parser = argparse.ArgumentParser()
     args = argparse.Namespace(
-        date=ref, start=start, end=end, sep=("\n" if sep is None else sep)
+        date=ref,
+        start=start,
+        end=end,
+        sep=("\n" if sep is None else sep),
     )
     date_range_action(parser, args)
     captured = capsys.readouterr()
@@ -125,6 +136,23 @@ def test_date_range_action(
             ),
             id="weekly-sep",
         ),
+        pytest.param(
+            {
+                "date": date(2019, 12, 31),
+                "start": RelativeYear(-10),
+                "end": RelativeYear(-6),
+                "before": 7,
+                "after": 7,
+                "preset": "ecmwf-mon-thu",
+                "sep": "/",
+            },
+            "/".join(
+                f"{y + (1 if m == 1 else 0)}{m:02d}{d:02d}"
+                for y in range(2009, 2014)
+                for m, d in [(12, 26), (12, 30), (1, 2), (1, 6)]
+            ),
+            id="preset-rel",
+        ),
     ],
 )
 def test_model_climate_action(
@@ -135,6 +163,7 @@ def test_model_climate_action(
     args.setdefault("weekly", None)
     args.setdefault("monthly", None)
     args.setdefault("yearly", None)
+    args.setdefault("preset", None)
     args.setdefault("exclude", [])
     args.setdefault("sep", "\n")
     args = argparse.Namespace(**args)
