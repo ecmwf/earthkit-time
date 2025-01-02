@@ -3,6 +3,7 @@ import re
 from typing import List, Tuple
 
 from ..calendar import Weekday, parse_date, parse_mmdd, to_weekday
+from ..climatology import RelativeYear
 from ..sequence import (
     DailySequence,
     MonthlySequence,
@@ -159,3 +160,7 @@ def add_sep_arg(parser: argparse.ArgumentParser):
         default="\n",
         help="output separator, see SEPARATORS for special values",
     )
+
+
+def relative_year(arg: str):
+    return RelativeYear(int(arg))

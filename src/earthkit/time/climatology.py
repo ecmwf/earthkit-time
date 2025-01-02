@@ -1,5 +1,6 @@
 """Date utilities to build a climatology"""
 
+from dataclasses import dataclass
 from datetime import date, timedelta
 from typing import Iterator, Union
 
@@ -7,10 +8,22 @@ from .sequence import Sequence, YearlySequence
 from .utilities import merge_sorted
 
 
+@dataclass
+class RelativeYear:
+    """Wrapper for a year intended to be relative to a reference"""
+
+    value: int
+
+    def relative_to(self, reference: Union[date, int]) -> int:
+        if isinstance(reference, date):
+            reference = reference.year
+        return reference + self.value
+
+
 def date_range(
     reference: date,
-    start: Union[date, int],
-    end: Union[date, int],
+    start: Union[date, int, RelativeYear],
+    end: Union[date, int, RelativeYear],
     recurrence: str = "yearly",
     include_endpoint: bool = True,
 ) -> Iterator[date]:
@@ -24,10 +37,10 @@ def date_range(
     reference: :class:`datetime.date`
         Reference date setting the fixed part in the sequence (e.g., month and day
         for a yearly recurrence)
-    start: :class:`datetime.date` or int
+    start: :class:`datetime.date`, int, or :class:`RelativeYear`
         Start of the period. Either a full date or a meaningful identifier (e.g.
         year for a yearly recurrence)
-    end: :class:`datetime.date` or int
+    end: :class:`datetime.date`, int, or :class:`RelativeYear`
         End of the period. Included in the sequence unless ``include_endpoint`` is
         ``False``
     recurrence: "yearly"
@@ -48,6 +61,8 @@ def date_range(
     [datetime.date(1999, 4, 12), datetime.date(2000, 4, 12), datetime.date(2001, 4, 12)]
     >>> list(date_range(date(2014, 8, 23), date(2010, 8, 16), date(2012, 8, 1)))
     [datetime.date(2010, 8, 23), datetime.date(2011, 8, 23)]
+    >>> list(date_range(date(2014, 8, 23), RelativeYear(-3), RelativeYear(-1)))
+    [datetime.date(2011, 8, 23), datetime.date(2012, 8, 23), datetime.date(2013, 8, 23)]
     """
 
     _known_recurrences = ["yearly"]
@@ -59,9 +74,13 @@ def date_range(
         if reference.month == 2 and reference.day == 29:
             reference = reference.replace(day=28)
 
+        if isinstance(start, RelativeYear):
+            start = start.relative_to(reference)
         if not isinstance(start, date):
             start = reference.replace(year=start)
 
+        if isinstance(end, RelativeYear):
+            end = end.relative_to(reference)
         if not isinstance(end, date):
             end = reference.replace(year=end)
 
@@ -71,8 +90,8 @@ def date_range(
 
 def model_climate_dates(
     reference: date,
-    start: Union[date, int],
-    end: Union[date, int],
+    start: Union[date, int, RelativeYear],
+    end: Union[date, int, RelativeYear],
     before: Union[timedelta, int],
     after: Union[timedelta, int],
     sequence: Sequence,
@@ -88,9 +107,9 @@ def model_climate_dates(
     ----------
     reference: :class:`datetime.date`
         Reference date for the climate
-    start: :class:`datetime.date` or int
+    start: :class:`datetime.date`, int, or :class:`RelativeYear`
         Start of the climatological period. Either a full date or a year
-    end: :class:`datetime.date` or int
+    end: :class:`datetime.date`, int, or :class:`RelativeYear`
         End of the climatological period. Either a full date or a year
     before: :class:`datetime.timedelta` or int
         Cut-off before the reference date. Either a timedelta or a number of
@@ -108,7 +127,7 @@ def model_climate_dates(
     Examples
     --------
     >>> from earthkit.time.calendar import MONDAY, THURSDAY
-    >>> from earthkit.time import MonthlySequence, WeeklySequence
+    >>> from earthkit.time import MonthlySequence, Sequence, WeeklySequence
     >>> sequence = WeeklySequence([MONDAY, THURSDAY])
     >>> [f"{d:%Y%m%d}" for d in model_climate_dates(date(2024, 2, 12), 2020, 2023, 7, 7, sequence)]
     ... # doctest: +NORMALIZE_WHITESPACE
@@ -123,6 +142,11 @@ def model_climate_dates(
      '20210205', '20210207', '20210209', '20210211', '20210213', '20210215', '20210217', '20210219',
      '20220205', '20220207', '20220209', '20220211', '20220213', '20220215', '20220217', '20220219',
      '20230205', '20230207', '20230209', '20230211', '20230213', '20230215', '20230217', '20230219']
+    >>> sequence = Sequence.from_resource("ecmwf-2days")
+    >>> [f"{d:%Y%m%d}" for d in model_climate_dates(
+    ...     date(2024, 12, 31), RelativeYear(-3), RelativeYear(-1), 2, 2, sequence
+    ... )]
+    ['20211229', '20211231', '20220101', '20221229', '20221231', '20230101', '20231229', '20231231', '20240101']
     """
     if not isinstance(before, timedelta):
         before = timedelta(days=before)
