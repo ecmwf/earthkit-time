@@ -34,7 +34,7 @@
 > \[!IMPORTANT\]
 > This software is **Emerging** and subject to ECMWF's guidelines on [Software Maturity](https://github.com/ecmwf/codex/raw/refs/heads/main/Project%20Maturity).
 
-Date and time manipulation routines for the use of weather data
+**earthkit-time** is a package containing date and time manipulation routines for the use of weather data. It is a component of [earthkit](https://github.com/ecmwf/earthkit).
 
 ## Documentation
 
