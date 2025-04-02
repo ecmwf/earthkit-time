@@ -24,8 +24,8 @@
 </p>
 
 <p align="center">
-  <!-- <a href="#quick-start">Quick Start</a>
-  • -->
+  <a href="#quick-start">Quick Start</a>
+  •
   <a href="#installation">Installation</a>
   •
   <a href="https://earthkit-time.readthedocs.io">Documentation</a>
