@@ -1,5 +1,5 @@
 from contextlib import nullcontext
-from datetime import date
+from datetime import date, datetime
 from typing import Tuple, Union
 
 import pytest
@@ -10,6 +10,7 @@ from earthkit.time.calendar import (
     day_exists,
     month_length,
     parse_date,
+    parse_datetime,
     parse_mmdd,
     to_weekday,
 )
@@ -213,3 +214,32 @@ def test_parse_date(arg: str, expected: Union[Tuple[int, int, int], None]):
         expected = date(*expected)
     with context:
         assert parse_date(arg) == expected
+
+
+@pytest.mark.parametrize(
+    "arg, expected",
+    [
+        pytest.param("", None, id="empty"),
+        pytest.param("2025", None, id="yearonly"),
+        pytest.param("202505", None, id="yearmonthonly"),
+        pytest.param("20250201", None, id="dateonly"),
+        pytest.param("2025250300", None, id="notadate"),
+        pytest.param("2025250348", None, id="notanhour"),
+        pytest.param("2025120412", (2025, 12, 4, 12), id="ok"),
+        pytest.param("202510251200", None, id="toolong"),
+        pytest.param((2026,), "^not enough values to unpack", id="tup-incomplete"),
+        pytest.param((2026, 2, 3, 6), (2026, 2, 3, 6), id="tup-ok"),
+        pytest.param((2026, 2, 30, 12), "^Invalid datetime: ", id="tup-notadate"),
+        pytest.param((2026, 2, 3, 36), "^Invalid datetime: ", id="tup-notanhour"),
+    ],
+)
+def test_parse_datetime(arg: str, expected: Union[Tuple[int, int, int, int], None]):
+    context = nullcontext()
+    if expected is None:
+        context = pytest.raises(ValueError, match="^Unrecognised datetime format: ")
+    elif isinstance(expected, str):
+        context = pytest.raises(ValueError, match=expected)
+    else:
+        expected = datetime(*expected)
+    with context:
+        assert parse_datetime(arg) == expected

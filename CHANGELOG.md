@@ -1,5 +1,9 @@
 # Changelog
 
+## Unpublished changes
+
+* Add `earthkit-datetime` tool to compute datetime shifts and differences
+
 ## 0.1.7 - 2025-01-02
 
 * Export version as `earthkit.time.__version__`

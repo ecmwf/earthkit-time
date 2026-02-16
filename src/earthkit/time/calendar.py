@@ -164,3 +164,24 @@ def parse_date(arg: Union[str, Tuple[int, int, int]]) -> date:
     if dt is None:
         raise ValueError(f"Unrecognised date format: {arg!r}")
     return dt.date()
+
+
+def parse_datetime(arg: Union[str, Tuple[int, int, int, int]]) -> datetime:
+    """Convert quadruplets of ints or YYYYMMDDHH strings into datetime objects"""
+    if not isinstance(arg, str):
+        y, m, d, h = arg
+        if not day_exists(y, m, d) or not 0 <= h <= 23:
+            raise ValueError(f"Invalid datetime: {arg!r}")
+        return datetime(y, m, d, h)
+    try_formats = ["%Y%m%d%H"]
+    dt = None
+    for fmt in try_formats:
+        try:
+            dt = datetime.strptime(arg, fmt)
+        except ValueError:
+            continue
+        else:
+            break
+    if dt is None:
+        raise ValueError(f"Unrecognised datetime format: {arg!r}")
+    return dt
