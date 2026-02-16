@@ -8,5 +8,6 @@ Command-line Interface
    :caption: Contents:
 
    date
+   datetime
    dateseq
    climdates
