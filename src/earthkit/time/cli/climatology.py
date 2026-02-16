@@ -79,14 +79,12 @@ def get_parser() -> argparse.ArgumentParser:
         "mclim",
         model_climate_action,
         help="compute sets of dates for model climatologies",
-        description=textwrap.dedent(
-            """\
+        description=textwrap.dedent("""\
             Compute sets of dates for model climatologies
 
             This combines a climatological range (same day in multiple years) and a
             recurring source (e.g. twice a week).
-            """
-        ),
+            """),
         epilog=SEQ_EPILOG + "\n" + SEP_EPILOG,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
