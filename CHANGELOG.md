@@ -1,6 +1,6 @@
 # Changelog
 
-## Unpublished changes
+## 0.1.8 - 2026-02-16
 
 * Add `earthkit-datetime` tool to compute datetime shifts and differences
 
