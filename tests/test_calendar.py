@@ -199,9 +199,9 @@ def test_parse_mmdd(
         pytest.param("20202503", None, id="notadate"),
         pytest.param("20201204", (2020, 12, 4), id="ok"),
         pytest.param("202010251200", None, id="toolong"),
-        pytest.param((2022,), "^not enough values to unpack", id="tup-inclomplete"),
+        pytest.param((2022,), "^not enough values to unpack", id="tup-incomplete"),
         pytest.param((2022, 2, 3), (2022, 2, 3), id="tup-ok"),
-        pytest.param((2022, 2, 30), "^Invalid date: ", id="tup-ok"),
+        pytest.param((2022, 2, 30), "^Invalid date: ", id="tup-notadate"),
     ],
 )
 def test_parse_date(arg: str, expected: Union[Tuple[int, int, int], None]):
