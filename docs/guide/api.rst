@@ -26,6 +26,9 @@ It can also be loaded from a dictionary using
 a preset file using
 :meth:`Sequence.from_resource <earthkit.time.sequence.Sequence.from_resource>`.
 
+For convenience, calling the :func:`~earthkit.time.sequence.create_sequence`
+function will dispatch to the appropriate constructor or factory method.
+
 
 Sequence examples
 ~~~~~~~~~~~~~~~~~
@@ -40,6 +43,8 @@ Example                                                      Description
 ``MonthlySequence([1, 8, 15, 22, 29], excludes=[(2, 29)])``  Sequence recurring every 7 days each month, skipping the 29\ :sup:`th` February
 ``YearlySequence((12, 25))``                                 Sequence recurring every year on the 25\ :sup:`th` December
 ``Sequence.from_resource("ecmwf-4days")``                    Pre-defined sequence (equivalent to ``MonthlySequence(range(1, 30, 4), excludes=[(2, 29)])``)
+``create_sequence("daily")``                                 Equivalent to ``DailySequence()``
+``create_sequence("resource", "ecmwf-2days")``               Equivalent to ``Sequence.from_resource("ecmwf-2days")``
 ===========================================================  =============================================================================================
 
 

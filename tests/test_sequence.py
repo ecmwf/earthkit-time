@@ -2,7 +2,7 @@ import bisect
 import calendar
 import os
 from datetime import date
-from typing import List, Optional, Tuple, Type
+from typing import Any, Dict, List, Optional, Tuple, Type
 
 import pytest
 import yaml
@@ -13,6 +13,7 @@ from earthkit.time.calendar import (
     SATURDAY,
     SUNDAY,
     THURSDAY,
+    TUESDAY,
     WEDNESDAY,
     month_length,
 )
@@ -22,6 +23,7 @@ from earthkit.time.sequence import (
     Sequence,
     WeeklySequence,
     YearlySequence,
+    create_sequence,
 )
 
 
@@ -427,7 +429,7 @@ def test_sequence(
         ),
     ],
 )
-def test_create_sequence(
+def test_sequence_from_dict(
     seq_dict: dict,
     expect_type: Type[Sequence],
     expect_days: Optional[list],
@@ -518,3 +520,180 @@ def test_sequence_from_resource(
 
     seq = Sequence.from_resource("ecmwf-4days")
     assert type(seq) is YearlySequence
+
+
+@pytest.mark.parametrize(
+    "name, args, kwargs, expect_type, expect_days, expect_excludes",
+    [
+        pytest.param("daily", (), {}, DailySequence, None, set(), id="daily"),
+        pytest.param(
+            "daily", ({31},), {}, DailySequence, None, {31}, id="daily-excludes"
+        ),
+        pytest.param(
+            "daily",
+            (),
+            {"excludes": {31}},
+            DailySequence,
+            None,
+            {31},
+            id="daily-excludes-kw",
+        ),
+        pytest.param(
+            "weekly", (2,), {}, WeeklySequence, [WEDNESDAY], None, id="weekly"
+        ),
+        pytest.param(
+            "weekly",
+            (),
+            {"days": [MONDAY, THURSDAY]},
+            WeeklySequence,
+            [MONDAY, THURSDAY],
+            None,
+            id="weekly-kw",
+        ),
+        pytest.param("monthly", (10,), {}, MonthlySequence, [10], set(), id="monthly"),
+        pytest.param(
+            "monthly",
+            (),
+            {"days": [10, 20]},
+            MonthlySequence,
+            [10, 20],
+            set(),
+            id="monthly-kw",
+        ),
+        pytest.param(
+            "monthly",
+            ([5, 25], {(1, 5), (12, 25)}),
+            {},
+            MonthlySequence,
+            [5, 25],
+            {(1, 5), (12, 25)},
+            id="monthly-excludes",
+        ),
+        pytest.param(
+            "monthly",
+            (),
+            {"days": [10, 20], "excludes": {(5, 10)}},
+            MonthlySequence,
+            [10, 20],
+            {(5, 10)},
+            id="monthly-excludes-kw",
+        ),
+        pytest.param(
+            "monthly",
+            ([29],),
+            {"excludes": {(2, 29)}},
+            MonthlySequence,
+            [29],
+            {(2, 29)},
+            id="monthly-excludes-mix",
+        ),
+        pytest.param(
+            "yearly", ((7, 1),), {}, YearlySequence, [(7, 1)], set(), id="yearly"
+        ),
+        pytest.param(
+            "yearly",
+            (),
+            {"days": [(6, 20), (12, 20)]},
+            YearlySequence,
+            [(6, 20), (12, 20)],
+            set(),
+            id="yearly-kw",
+        ),
+        pytest.param(
+            "yearly",
+            ([2, 28], {(2024, 2, 28)}),
+            {},
+            YearlySequence,
+            [2, 28],
+            {(2024, 2, 28)},
+            id="yearly-excludes",
+        ),
+        pytest.param(
+            "yearly",
+            (),
+            {"days": [(5, 5), (6, 6)], "excludes": {(2006, 6, 6)}},
+            YearlySequence,
+            [(5, 5), (6, 6)],
+            {(2006, 6, 6)},
+            id="yearly-excludes-kw",
+        ),
+        pytest.param(
+            "yearly",
+            ([(4, 1)],),
+            {"excludes": {(2020, 4, 1)}},
+            YearlySequence,
+            [(4, 1)],
+            {(2020, 4, 1)},
+            id="yearly-excludes-mix",
+        ),
+        pytest.param(
+            "dict", ({"type": "daily"},), {}, DailySequence, None, set(), id="dict"
+        ),
+        pytest.param(
+            "dict",
+            (),
+            {"seq_dict": {"type": "weekly", "days": [1, 3]}},
+            WeeklySequence,
+            [TUESDAY, THURSDAY],
+            None,
+            id="dict-kw",
+        ),
+        pytest.param(
+            "resource",
+            ("ecmwf-2days",),
+            {},
+            MonthlySequence,
+            list(range(1, 32, 2)),
+            {(2, 29)},
+            id="resource",
+        ),
+        pytest.param(
+            "resource",
+            (),
+            {"name": "ecmwf-mon-thu"},
+            WeeklySequence,
+            [MONDAY, THURSDAY],
+            None,
+            id="resource-kw",
+        ),
+        pytest.param(
+            "file", ("seqs/foo.yaml",), {}, DailySequence, None, {13}, id="file"
+        ),
+        pytest.param(
+            "file",
+            (),
+            {"name": "seqs/bar.yaml"},
+            YearlySequence,
+            [(1, 1)],
+            set(),
+            id="file-kw",
+        ),
+    ],
+)
+def test_create_sequence(
+    name: str,
+    args: tuple,
+    kwargs: Dict[str, Any],
+    expect_type: Type[Sequence],
+    expect_days: Optional[list],
+    expect_excludes: Optional[set],
+    monkeypatch,
+    tmp_path,
+):
+    if name == "file":
+        seq_dir = tmp_path / "seqs"
+        seq_dir.mkdir(parents=True, exist_ok=True)
+        (seq_dir / "foo.yaml").write_text(
+            yaml.safe_dump({"type": "daily", "excludes": [13]})
+        )
+        (seq_dir / "bar.yaml").write_text(
+            yaml.safe_dump({"type": "yearly", "days": (1, 1)})
+        )
+        monkeypatch.chdir(tmp_path)
+
+    seq = create_sequence(name, *args, **kwargs)
+    assert type(seq) is expect_type
+    if expect_days is not None:
+        assert seq.days == expect_days
+    if expect_excludes is not None:
+        assert seq.excludes == expect_excludes

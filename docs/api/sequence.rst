@@ -12,6 +12,15 @@ Sequences are described by subclasses of :class:`Sequence`.
     :members:
 
 
+Sequence creation shortcut
+--------------------------
+
+Besides the class constructors and factory methods, sequences can be created
+using :func:`create_sequence`.
+
+.. autofunction:: create_sequence
+
+
 Built-in Sequences
 ------------------
 

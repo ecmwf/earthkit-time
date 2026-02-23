@@ -471,3 +471,32 @@ class YearlySequence(Sequence, seqname="yearly"):
             days = [parse_mmdd(day) for day in days]
         excludes = {parse_date(exc) for exc in seq_dict.get("excludes", set())}
         return cls(days, excludes=excludes)
+
+
+def create_sequence(type_: str, *args, **kwargs) -> Sequence:
+    """Create a sequence
+
+    This is a wrapper around the following constructors and factory methods. Any
+    extra arguments (positional or keyword) are passed to the corresponding
+    callable.
+
+    ============  ==============================  ======================
+    ``type_``     Dispatched to                   Arguments
+    ============  ==============================  ======================
+    ``daily``     :class:`DailySequence`          ``excludes``
+    ``weekly``    :class:`WeeklySequence`         ``days``
+    ``monthly``   :class:`MonthlySequence`        ``days``, ``excludes``
+    ``yearly``    :class:`YearlySequence`         ``days``, ``excludes``
+    ``dict``      :meth:`Sequence.from_dict`      ``seq_dict``
+    ``resource``  :meth:`Sequence.from_resource`  ``name``
+    ``file``      :meth:`Sequence.from_resource`  ``name``
+    ============  ==============================  ======================
+    """
+    if type_ == "dict":
+        return Sequence.from_dict(*args, **kwargs)
+    elif type_ in ["file", "resource"]:
+        return Sequence.from_resource(*args, **kwargs)
+    else:
+        if type_ not in Sequence._known_types:
+            raise ValueError(f"Unknown type {type_!r}")
+        return Sequence._known_types[type_](*args, **kwargs)
