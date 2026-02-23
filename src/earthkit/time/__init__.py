@@ -1,11 +1,11 @@
 from .climatology import RelativeYear, date_range, model_climate_dates
 from .sequence import (
-    create_sequence,
     DailySequence,
     MonthlySequence,
     Sequence,
     WeeklySequence,
     YearlySequence,
+    create_sequence,
 )
 
 __version__ = "0.1.8"
