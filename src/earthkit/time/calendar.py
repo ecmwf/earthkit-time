@@ -152,9 +152,11 @@ def parse_date(arg: Union[str, Tuple[int, int, int]]) -> date:
         if not day_exists(y, m, d):
             raise ValueError(f"Invalid date: {arg!r}")
         return date(y, m, d)
-    try_formats = ["%Y%m%d"]
+    try_formats = [("%Y%m%d", 8)]
     dt = None
-    for fmt in try_formats:
+    for fmt, num in try_formats:
+        if len(arg) != num:
+            continue
         try:
             dt = datetime.strptime(arg, fmt)
         except ValueError:
@@ -173,9 +175,11 @@ def parse_datetime(arg: Union[str, Tuple[int, int, int, int]]) -> datetime:
         if not day_exists(y, m, d) or not 0 <= h <= 23:
             raise ValueError(f"Invalid datetime: {arg!r}")
         return datetime(y, m, d, h)
-    try_formats = ["%Y%m%d%H"]
+    try_formats = [("%Y%m%d%H", 10)]
     dt = None
-    for fmt in try_formats:
+    for fmt, num in try_formats:
+        if len(arg) != num:
+            continue
         try:
             dt = datetime.strptime(arg, fmt)
         except ValueError:

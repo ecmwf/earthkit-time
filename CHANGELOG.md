@@ -3,6 +3,7 @@
 ## Unreleased changes
 
 * Add `earthkit.time.create_sequence` wrapper for easy sequence creation
+* Fix misleading date/datetime parsing
 
 ## 0.1.8 - 2026-02-16
 
