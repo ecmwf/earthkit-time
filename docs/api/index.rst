@@ -7,4 +7,5 @@ API Reference
 
    sequence
    climatology
+   timesteps
    calendar

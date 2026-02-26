@@ -163,3 +163,165 @@ To combine yearly dates with multiple reference dates taken from a sequence, use
    20180731, 20180803, 20180807, 20180810, 20190731, 20190803, 20190807, 20190810, 20200731, 20200803, 20200807, 20200810
    >>> print_dates(model_climate_dates(date(2023, 1, 1), RelativeYear(-7), RelativeYear(-4), 5, 5, seq))
    20151229, 20160102, 20160105, 20161229, 20170102, 20170105, 20171229, 20180102, 20180105, 20181229, 20190102, 20190105
+
+
+Manipulating time steps and ranges
+----------------------------------
+
+A step range is represented as a ``start-end`` string, or a ``(start, end)``
+tuple. The :func:`~earthkit.time.timesteps.parse_range` function converts the
+string representation to a tuple of integers.
+
+
+Simple manipulations
+~~~~~~~~~~~~~~~~~~~~
+
+Regularly-spaced step ranges of the same width repeating at a given interval can
+be created with :func:`~earthkit.time.timesteps.regular_ranges`:
+
+.. code-block:: pycon
+
+   >>> from earthkit.time import regular_ranges
+   >>> list(regular_ranges(24, 48, 12, 6))
+   [(24, 36), (30, 42), (36, 48)]
+
+To expand a step range into its steps, given an interval, use
+:func:`~earthkit.time.timesteps.expand_range`:
+
+.. code-block:: pycon
+
+   >>> from earthkit.time import expand_range
+   >>> list(expand_range("0-24", 6))
+   [0, 6, 12, 18, 24]
+
+
+The :func:`~earthkit.time.timesteps.hours_from_delta` function converts
+:class:`~datetime.timedelta` objects to time step numbers in hours:
+
+.. code-block:: pycon
+
+   >>> from datetime import timedelta
+   >>> from earthkit.time import hours_from_delta
+   >>> hours_from_delta(timedelta(days=2))
+   48
+
+
+Daily ranges
+~~~~~~~~~~~~
+
+Conversion between day numbers and the corresponding step ranges can be done
+with :func:`~earthkit.time.timesteps.range_from_day` and
+:func:`~earthkit.time.timesteps.day_from_range`. Both functions take a forecast
+base time (which can be a datetime or a time) and the starting time of the first
+day.
+
+.. code-block:: pycon
+
+   >>> from datetime import time
+   >>> from earthkit.time import range_from_day, day_from_range
+   >>> range_from_day(1)
+   (0, 24)
+   >>> range_from_day(2, 12)
+   (36, 60)
+   >>> range_from_day(1, time(6), time(12))
+   (6, 30)
+   >>> day_from_range((24, 48))
+   2
+   >>> day_from_range((6, 30), time(6), time(12))
+   1
+
+
+Weekly ranges
+~~~~~~~~~~~~~
+
+Conversion between week numbers and the corresponding step ranges can be done
+with :func:`~earthkit.time.timesteps.range_from_week` and
+:func:`~earthkit.time.timesteps.week_from_range`. Both functions take a forecast
+base time (which can be a date, a datetime, a time, a weeek day, or a (week day,
+time) tuple) and a starting day of the week. The first week starts on the first
+full day matching the given starting day (or the first full day if not given),
+at 00:00.
+
+.. code-block:: pycon
+
+   >>> from datetime import date, datetime, time
+   >>> from earthkit.time.calendar import MONDAY, SUNDAY, THURSDAY
+   >>> from earthkit.time import range_from_week, week_from_range
+   >>> range_from_week(1)
+   (0, 168)
+   >>> range_from_week(2, time(12))
+   (180, 348)
+   >>> range_from_week(1, THURSDAY, MONDAY)
+   (96, 264)
+   >>> range_from_week(1, (THURSDAY, time(12)), MONDAY)
+   (84, 252)
+   >>> range_from_week(3, date(2023, 11, 10), SUNDAY)  # 2023-11-10 is a Friday
+   (384, 552)
+   >>> range_from_week(3, datetime(2023, 11, 10, 6), SUNDAY)
+   (378, 546)
+   >>> week_from_range((336, 504))
+   3
+   >>> week_from_range((96, 264), THURSDAY, MONDAY)
+   1
+
+
+Monthly dates and ranges
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Monthly date computations can be done with
+:func:`~earthkit.time.timesteps.startdate_from_month` and
+:func:`~earthkit.time.timesteps.month_from_startdate`. Both functions take a
+forecast base date (which can be a date, or a ``(year, month)`` tuple).
+:func:`~earthkit.time.timesteps.startdate_from_month` optionally takes a start
+day for the month (in the reverse case, the start day is inferred from the
+date).
+
+.. code-block:: pycon
+
+   >>> from datetime import date
+   >>> from earthkit.time import startdate_from_month, month_from_startdate
+   >>> startdate_from_month(1, (2026, 1))
+   date(2026, 1, 1)
+   >>> startdate_from_month(3, date(2024, 1, 15))
+   date(2024, 4, 1)
+   >>> startdate_from_month(5, date(2022, 1, 1), 15)
+   date(2022, 5, 15)
+   >>> startdate_from_month(6, date(2021, 8, 1))
+   date(2022, 1, 1)
+   >>> month_from_startdate((2026, 1), (2026, 1))
+   1
+   >>> month_from_startdate(date(2024, 1, 1), (2024, 3))
+   3
+   >>> month_from_startdate(date(2020, 1, 15), date(2020, 8, 1))
+   7
+   >>> month_from_startdate(date(2019, 1, 15), date(2019, 8, 15))
+   8
+   >>> month_from_startdate(date(2018, 1, 1), date(2018, 9, 15))
+   9
+   >>> month_from_startdate((2017, 4), date(2018, 1, 1))
+   10
+
+Conversion between month numbers and the corresponding step ranges can be done
+with :func:`~earthkit.time.timesteps.range_from_month` and
+:func:`~earthkit.time.timesteps.month_from_range`. Both functions take a
+forecast base date (which can be a date, or a ``(year, month)`` tuple) and a
+starting day of the month.
+
+.. code-block:: pycon
+
+   >>> from datetime import date
+   >>> from earthkit.time import range_from_month, month_from_range
+   >>> range_from_month(1, (2026, 1))
+   (0, 744)
+   >>> range_from_month(2, date(2025, 1, 1))
+   (744, 1416)
+   >>> range_from_month(4, date(2023, 1, 15))
+   (2544, 3288)
+   >>> range_from_month(5, date(2022, 1, 15), 15)
+   (2880, 3624)
+   >>> month_from_range((744, 1416), (2025, 1))
+   2
+   >>> month_from_range((2544, 3288), date(2023, 1, 15))
+   4
+   >>> month_from_range((2880, 3624), date(2022, 1, 15), 15)
+   5
