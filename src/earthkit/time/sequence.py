@@ -15,7 +15,7 @@ from .data import load_yaml
 
 
 class Sequence(ABC):
-    """Abstract representation of a sequence of dates
+    """Abstract representation of a sequence of dates.
 
     Minimal implementation requirement: ``__contains__``. Implementing ``next``
     and ``previous`` is highly recommended for efficiency.
@@ -92,7 +92,7 @@ class Sequence(ABC):
             current = self.next(current)
 
     def bracket(self, reference: date, num: Union[int, Tuple[int, int]] = 1, strict: bool = True) -> Iterator[date]:
-        """Return matching dates around ``reference``
+        """Return matching dates around ``reference``.
 
         Parameters
         ----------
@@ -129,7 +129,7 @@ class Sequence(ABC):
     @classmethod
     @abstractmethod
     def _from_dict(cls, seq_dict: dict) -> "Sequence":
-        """Create a specific sequence from the given dictionary
+        """Create a specific sequence from the given dictionary.
 
         Dictionary contents can vary depending on the sequence. Frequent items are:
         * ``days``: list of recurring days
@@ -152,7 +152,7 @@ class Sequence(ABC):
 
     @classmethod
     def from_dict(cls, seq_dict: dict) -> "Sequence":
-        """Create a sequence from the given dictionary
+        """Create a sequence from the given dictionary.
 
         The type of sequence is specified by the ``type`` key, and must match
         one of the known sequences, e.g. ``daily``, ``weekly``, ``monthly``,
@@ -174,7 +174,7 @@ class Sequence(ABC):
 
     @classmethod
     def from_resource(cls, name: str) -> "Sequence":
-        """Load a sequence from a resource file
+        """Load a sequence from a resource file.
 
         ``name`` should be either the name of a known sequence (in
         ``earthkit.time.data.sequences`` or ``EARTHKIT_TIME_SEQ_PATH``,
@@ -190,7 +190,7 @@ class Sequence(ABC):
 
 
 class DailySequence(Sequence, seqname="daily"):
-    """Sequence of consecutive dates
+    """Sequence of consecutive dates.
 
     Any day number (in the month) present in ``excludes`` will be skipped
 
@@ -215,7 +215,7 @@ class DailySequence(Sequence, seqname="daily"):
 
 
 class WeeklySequence(Sequence, seqname="weekly"):
-    """Sequence of dates happening on given days of each week
+    """Sequence of dates happening on given days of each week.
 
     Can be created from a :class:`dict` with items:
 
@@ -278,7 +278,7 @@ class WeeklySequence(Sequence, seqname="weekly"):
 
 
 class MonthlySequence(Sequence, seqname="monthly"):
-    """Sequence of dates happening on given days of each month
+    """Sequence of dates happening on given days of each month.
 
     Any ``(month, day)`` tuple present in ``excludes`` will be skipped
 
@@ -360,7 +360,7 @@ class MonthlySequence(Sequence, seqname="monthly"):
 
 
 class YearlySequence(Sequence, seqname="yearly"):
-    """Sequence of dates happening on given days of each year (in (month, day) format)
+    """Sequence of dates happening on given days of each year (in (month, day) format).
 
     Can be created from a :class:`dict` with items:
 
@@ -453,7 +453,7 @@ class YearlySequence(Sequence, seqname="yearly"):
 
 
 def create_sequence(type_: str, *args, **kwargs) -> Sequence:
-    """Create a sequence
+    """Create a sequence.
 
     This is a wrapper around the following constructors and factory methods. Any
     extra arguments (positional or keyword) are passed to the corresponding

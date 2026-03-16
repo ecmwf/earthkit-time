@@ -1,4 +1,4 @@
-"""Date utilities to build a climatology"""
+"""Date utilities to build a climatology."""
 
 from dataclasses import dataclass
 from datetime import date, timedelta
@@ -10,7 +10,7 @@ from .utilities import merge_sorted
 
 @dataclass
 class RelativeYear:
-    """Wrapper for a year intended to be relative to a reference"""
+    """Wrapper for a year intended to be relative to a reference."""
 
     value: int
 
@@ -27,7 +27,7 @@ def date_range(
     recurrence: str = "yearly",
     include_endpoint: bool = True,
 ) -> Iterator[date]:
-    """Generate a sequence of dates following a recurrence pattern
+    """Generate a sequence of dates following a recurrence pattern.
 
     If the reference date is February 29th on a leap year, it will be replaced
     by February 28th for every year in the output.
@@ -95,7 +95,7 @@ def model_climate_dates(
     after: Union[timedelta, int],
     sequence: Sequence,
 ) -> Iterator[date]:
-    """Generate a set of dates for a model climate
+    """Generate a set of dates for a model climate.
 
     The set is created by combining yearly dates between ``start`` and ``end``,
     for each date between ``reference - before`` and ``reference + after``. If

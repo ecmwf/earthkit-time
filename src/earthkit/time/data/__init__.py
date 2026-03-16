@@ -52,7 +52,7 @@ def find_resource(
     env_file: Optional[str] = None,
     env_path: Optional[str] = None,
 ) -> Tuple[ResourceType, str]:
-    """Find a given resource file using various methods
+    """Find a given resource file using various methods.
 
     The search order is: ``path``, ``env_file``, `env_path``, packaged date.
 
@@ -74,7 +74,6 @@ def find_resource(
     str
         Path to the resource, if found
     """
-
     if path is not None:
         if pathlib.Path(path).is_file():
             return ResourceType.FILE, path
@@ -103,7 +102,7 @@ def load_yaml(
     env_file: Optional[str] = None,
     env_path: Optional[str] = None,
 ) -> object:
-    """Load a YAML resource
+    """Load a YAML resource.
 
     See `find_resource` for the signification of the parameters
 
