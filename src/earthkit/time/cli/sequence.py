@@ -54,17 +54,11 @@ def seq_bracket_action(parser: argparse.ArgumentParser, args: argparse.Namespace
     if args.after is not None:
         num = (args.before, args.after)
     seq = create_sequence(parser, args)
-    print(
-        format_date_list(
-            seq.bracket(args.date, num, strict=(not args.inclusive)), sep=args.sep
-        )
-    )
+    print(format_date_list(seq.bracket(args.date, num, strict=(not args.inclusive)), sep=args.sep))
 
 
 def get_parser() -> argparse.ArgumentParser:
-    parser = ActionParser(
-        description="Manipulate sequences of dates", fromfile_prefix_chars="@"
-    )
+    parser = ActionParser(description="Manipulate sequences of dates", fromfile_prefix_chars="@")
 
     next_action = parser.add_action(
         "next",
@@ -139,12 +133,8 @@ def get_parser() -> argparse.ArgumentParser:
     add_sep_arg(range_action)
     range_action.add_argument("from", type=parse_date, help="starting date")
     range_action.add_argument("to", type=parse_date, help="ending date")
-    range_action.add_argument(
-        "--exclude-start", action="store_true", help="exclude starting date"
-    )
-    range_action.add_argument(
-        "--exclude-end", action="store_true", help="exclude ending date"
-    )
+    range_action.add_argument("--exclude-start", action="store_true", help="exclude starting date")
+    range_action.add_argument("--exclude-end", action="store_true", help="exclude ending date")
 
     bracket_action = parser.add_action(
         "bracket",

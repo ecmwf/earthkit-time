@@ -16,9 +16,7 @@ from earthkit.time.cli.sequence import (
 @pytest.mark.parametrize(
     "args, expected",
     [
-        pytest.param(
-            {"daily": True, "date": date(1999, 12, 31)}, "20000101", id="daily"
-        ),
+        pytest.param({"daily": True, "date": date(1999, 12, 31)}, "20000101", id="daily"),
         pytest.param(
             {"daily": True, "date": date(1999, 12, 31), "inclusive": True},
             "19991231",
@@ -150,9 +148,7 @@ def test_seq_prev(args: dict, expected: str, capsys: pytest.CaptureFixture[str])
 @pytest.mark.parametrize(
     "args, expected",
     [
-        pytest.param(
-            {"daily": True, "date": date(2006, 7, 26)}, "20060726", id="daily"
-        ),
+        pytest.param({"daily": True, "date": date(2006, 7, 26)}, "20060726", id="daily"),
         pytest.param(
             {"daily": True, "date": date(2017, 3, 30), "exclude": ["30", "31"]},
             "20170329",
@@ -212,10 +208,7 @@ def test_seq_nearest(args: dict, expected: str, capsys: pytest.CaptureFixture[st
                 "to": date(2010, 10, 17),
                 "exclude_start": True,
             },
-            "\n".join(
-                f"2010{m:02d}{d:02d}"
-                for m, d in [(9, 12), (9, 19), (9, 26), (10, 3), (10, 10), (10, 17)]
-            ),
+            "\n".join(f"2010{m:02d}{d:02d}" for m, d in [(9, 12), (9, 19), (9, 26), (10, 3), (10, 10), (10, 17)]),
             id="weekly-nostart",
         ),
         pytest.param(
@@ -247,9 +240,7 @@ def test_seq_nearest(args: dict, expected: str, capsys: pytest.CaptureFixture[st
                 "exclude_start": True,
                 "exclude_end": True,
             },
-            "\n".join(
-                f"{y:04d}{m:02d}{d:02d}" for y, m, d in [(2014, 1, 15), (2014, 7, 20)]
-            ),
+            "\n".join(f"{y:04d}{m:02d}{d:02d}" for y, m, d in [(2014, 1, 15), (2014, 7, 20)]),
             id="yearly-nostart-noend",
         ),
         pytest.param(
@@ -292,18 +283,14 @@ def test_seq_range(args: dict, expected: str, capsys: pytest.CaptureFixture[str]
 @pytest.mark.parametrize(
     "args, expected",
     [
-        pytest.param(
-            {"daily": True, "date": date(2015, 3, 26)}, "20150325\n20150327", id="daily"
-        ),
+        pytest.param({"daily": True, "date": date(2015, 3, 26)}, "20150325\n20150327", id="daily"),
         pytest.param(
             {
                 "weekly": [Weekday.WEDNESDAY, Weekday.SATURDAY],
                 "date": date(2016, 10, 4),
                 "before": 2,
             },
-            "\n".join(
-                f"2016{m:02d}{d:02d}" for m, d in [(9, 28), (10, 1), (10, 5), (10, 8)]
-            ),
+            "\n".join(f"2016{m:02d}{d:02d}" for m, d in [(9, 28), (10, 1), (10, 5), (10, 8)]),
             id="weekly-2",
         ),
         pytest.param(
@@ -319,10 +306,7 @@ def test_seq_range(args: dict, expected: str, capsys: pytest.CaptureFixture[str]
                 "after": 2,
                 "inclusive": True,
             },
-            "\n".join(
-                f"{y:04d}{m:02d}{d:02d}"
-                for y, m, d in [(2019, 2, 2), (2019, 3, 3), (2019, 4, 4), (2020, 1, 1)]
-            ),
+            "\n".join(f"{y:04d}{m:02d}{d:02d}" for y, m, d in [(2019, 2, 2), (2019, 3, 3), (2019, 4, 4), (2020, 1, 1)]),
             id="yearly-1-2-inc",
         ),
         pytest.param(

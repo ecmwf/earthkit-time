@@ -86,13 +86,9 @@ def test_day_exists(year: int, month: int, day: int, expected: bool):
     assert day_exists(year, month, day) == expected
 
 
-@pytest.mark.parametrize(
-    "year, month, ok", [(y, y - 2009, y > 2009 and y < 2022) for y in range(2005, 2025)]
-)
+@pytest.mark.parametrize("year, month, ok", [(y, y - 2009, y > 2009 and y < 2022) for y in range(2005, 2025)])
 def test_monthinyear_create(year: int, month: int, ok: bool):
-    context = (
-        nullcontext() if ok else pytest.raises(ValueError, match="^Invalid month:")
-    )
+    context = nullcontext() if ok else pytest.raises(ValueError, match="^Invalid month:")
     with context:
         ymonth = MonthInYear(year, month)
     if ok:
@@ -114,9 +110,7 @@ def test_monthinyear_create(year: int, month: int, ok: bool):
         (2018, 8, 0, False),
     ],
 )
-def test_monthinyear_contains(
-    year: int, month: int, day: Union[int, date], expected: bool
-):
+def test_monthinyear_contains(year: int, month: int, day: Union[int, date], expected: bool):
     ymonth = MonthInYear(year, month)
     assert (day in ymonth) == expected
 
@@ -180,9 +174,7 @@ def test_monthinyear_previous(year: int, month: int, eyear: int, emonth: int):
         ("1213", (12, 13)),
     ],
 )
-def test_parse_mmdd(
-    arg: Union[Tuple[int, int], str], expected: Union[Tuple[int, int], str]
-):
+def test_parse_mmdd(arg: Union[Tuple[int, int], str], expected: Union[Tuple[int, int], str]):
     context = nullcontext()
     if isinstance(expected, str):
         context = pytest.raises(ValueError, match=expected)

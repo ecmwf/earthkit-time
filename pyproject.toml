@@ -1,51 +1,60 @@
 [build-system]
-requires = ["setuptools>=65", "wheel"]
 build-backend = "setuptools.build_meta"
+requires = ["setuptools>=65", "wheel"]
 
 [project]
-dynamic = ["version"]
-name = "earthkit-time"
-requires-python = ">= 3.8"
-description = "Date and time manipulation routines for the use of weather data"
-license = {file = "LICENSE"}
-readme = "README.md"
 classifiers = [
-    "Development Status :: 4 - Beta",
-    "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: Apache Software License",
-    "Natural Language :: English",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Topic :: Scientific/Engineering",
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: Apache Software License",
+  "Natural Language :: English",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering"
 ]
 dependencies = ["pyyaml"]
+description = "Date and time manipulation routines for the use of weather data"
+dynamic = ["version"]
+license = {file = "LICENSE"}
+name = "earthkit-time"
+readme = "README.md"
+requires-python = ">= 3.8"
 
 [project.optional-dependencies]
 docs = [
-    "myst-parser",
-    "Sphinx",
-    "sphinx-rtd-theme",
+  "myst-parser",
+  "Sphinx",
+  "sphinx-rtd-theme"
 ]
 test = [
-    "pytest >= 8.1",
+  "pytest >= 8.1"
 ]
 
 [project.scripts]
 earthkit-climdates = "earthkit.time.cli.climatology:main"
-earthkit-dateseq = "earthkit.time.cli.sequence:main"
 earthkit-date = "earthkit.time.cli.date:main"
+earthkit-dateseq = "earthkit.time.cli.sequence:main"
 earthkit-datetime = "earthkit.time.cli.datetime:main"
 
 [project.urls]
-Homepage = "https://github.com/ecmwf/earthkit-time/"
 Documentation = "https://earthkit-time.readthedocs.io"
+Homepage = "https://github.com/ecmwf/earthkit-time/"
+
+[tool.pytest.ini_options]
+addopts = "--doctest-modules"
+consider_namespace_packages = true
+minversion = "8.1"
+testpaths = [
+  "src",
+  "tests"
+]
 
 [tool.ruff]
 line-length = 120
@@ -70,23 +79,14 @@ select = [
   "E",  # pycodestyle
   "W",  # pycodestyle warnings
   "I",  # isort
-  "D",  # pydocstyle
+  "D"  # pydocstyle
 ]
-
-[tool.pytest.ini_options]
-minversion = "8.1"
-addopts = "--doctest-modules"
-testpaths = [
-    "src",
-    "tests",
-]
-consider_namespace_packages = true
 
 [tool.setuptools.dynamic]
 version = {attr = "earthkit.time.__version__"}
 
-[tool.setuptools.packages.find]
-where = ["src"]
-
 [tool.setuptools.package-data]
 "earthkit.time.data" = ["*/*.yaml"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

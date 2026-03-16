@@ -91,9 +91,7 @@ class Sequence(ABC):
             yield current
             current = self.next(current)
 
-    def bracket(
-        self, reference: date, num: Union[int, Tuple[int, int]] = 1, strict: bool = True
-    ) -> Iterator[date]:
+    def bracket(self, reference: date, num: Union[int, Tuple[int, int]] = 1, strict: bool = True) -> Iterator[date]:
         """Return matching dates around ``reference``
 
         Parameters
@@ -185,9 +183,7 @@ class Sequence(ABC):
         Raises :class:`FileNotFoundError` if no corresponding resource is found
         """
         path = name if os.path.isfile(name) else None
-        seq_dict = load_yaml(
-            f"sequences/{name}.yaml", path, env_path="EARTHKIT_TIME_SEQ_PATH"
-        )
+        seq_dict = load_yaml(f"sequences/{name}.yaml", path, env_path="EARTHKIT_TIME_SEQ_PATH")
         if not isinstance(seq_dict, dict):
             raise ValueError("Invalid resource file")
         return cls.from_dict(seq_dict)
@@ -310,10 +306,7 @@ class MonthlySequence(Sequence, seqname="monthly"):
         self.excludes = excludes
 
     def __contains__(self, reference: date) -> bool:
-        return (
-            reference.day in self.days
-            and (reference.month, reference.day) not in self.excludes
-        )
+        return reference.day in self.days and (reference.month, reference.day) not in self.excludes
 
     def __repr__(self) -> str:
         return f"MonthlySequence(days={self.days!r}, excludes={self.excludes!r})"
@@ -326,9 +319,7 @@ class MonthlySequence(Sequence, seqname="monthly"):
             (
                 day
                 for day in self.days
-                if day > reference.day
-                and day in ymonth
-                and (ymonth.month, day) not in self.excludes
+                if day > reference.day and day in ymonth and (ymonth.month, day) not in self.excludes
             ),
             None,
         )
@@ -348,9 +339,7 @@ class MonthlySequence(Sequence, seqname="monthly"):
             (
                 day
                 for day in self.days[::-1]
-                if day < reference.day
-                and day in ymonth
-                and (ymonth.month, day) not in self.excludes
+                if day < reference.day and day in ymonth and (ymonth.month, day) not in self.excludes
             ),
             None,
         )
@@ -387,11 +376,7 @@ class YearlySequence(Sequence, seqname="yearly"):
         days: Union[Tuple[int, int], Iterable[Tuple[int, int]]],
         excludes: Container[date] = set(),
     ):
-        if (
-            isinstance(days, tuple)
-            and len(days) == 2
-            and all(isinstance(day, int) for day in days)
-        ):
+        if isinstance(days, tuple) and len(days) == 2 and all(isinstance(day, int) for day in days):
             self.days = [days]
         else:
             self.days = sorted(days)
@@ -424,10 +409,7 @@ class YearlySequence(Sequence, seqname="yearly"):
         while new_day is None:
             year += 1
             for month, day in self.days:
-                if (
-                    day_exists(year, month, day)
-                    and date(year, month, day) not in self.excludes
-                ):
+                if day_exists(year, month, day) and date(year, month, day) not in self.excludes:
                     new_month = month
                     new_day = day
                     break
@@ -451,10 +433,7 @@ class YearlySequence(Sequence, seqname="yearly"):
         while new_day is None:
             year -= 1
             for month, day in self.days[::-1]:
-                if (
-                    day_exists(year, month, day)
-                    and date(year, month, day) not in self.excludes
-                ):
+                if day_exists(year, month, day) and date(year, month, day) not in self.excludes:
                     new_month = month
                     new_day = day
                     break

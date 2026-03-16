@@ -35,11 +35,7 @@ def _open_text(
     errors: str = "strict",
 ) -> TextIO:
     if hasattr(resources, "files"):  # Python >= 3.9
-        return (
-            resources.files(package)
-            .joinpath(resource)
-            .open("r", encoding=encoding, errors=errors)
-        )
+        return resources.files(package).joinpath(resource).open("r", encoding=encoding, errors=errors)
     else:
         return resources.open_text(package, resource, encoding, errors)
 

@@ -263,10 +263,7 @@ def test_sequence(
 
     assert list(seq.range(dates[0], dates[-1])) == dates
     assert list(seq.range(dates[0], dates[-1], include_start=False)) == dates[1:]
-    assert (
-        list(seq.range(dates[0], dates[-1], include_start=False, include_end=False))
-        == dates[1:-1]
-    )
+    assert list(seq.range(dates[0], dates[-1], include_start=False, include_end=False)) == dates[1:-1]
     assert list(seq.range(dates[0], dates[-1], include_end=False)) == dates[:-1]
 
     assert list(seq.bracket(dates[2])) == [dates[1], dates[3]]
@@ -296,22 +293,14 @@ def test_sequence(
             assert seq.nearest(out_date, resolve="next") == dates[out_i]
 
         assert list(seq.range(out_date, dates[-1])) == dates[out_i:]
-        assert (
-            list(seq.range(out_date, dates[-1], include_start=False)) == dates[out_i:]
-        )
+        assert list(seq.range(out_date, dates[-1], include_start=False)) == dates[out_i:]
         assert list(seq.range(dates[0], out_date)) == dates[:out_i]
         assert list(seq.range(dates[0], out_date, include_end=False)) == dates[:out_i]
 
         assert list(seq.bracket(out_date)) == [dates[out_i - 1], dates[out_i]]
         assert list(seq.bracket(out_date, (before, after))) == dates
-        assert (
-            list(seq.bracket(out_date, (min(2, before), after)))
-            == dates[max(0, out_i - 2) :]
-        )
-        assert (
-            list(seq.bracket(out_date, (before, min(2, after))))
-            == dates[: min(len(dates), out_i + 2)]
-        )
+        assert list(seq.bracket(out_date, (min(2, before), after))) == dates[max(0, out_i - 2) :]
+        assert list(seq.bracket(out_date, (before, min(2, after)))) == dates[: min(len(dates), out_i + 2)]
 
 
 @pytest.mark.parametrize(
@@ -353,9 +342,7 @@ def test_sequence(
             None,
             id="weekly-strlist",
         ),
-        pytest.param(
-            {"type": "monthly", "days": 13}, MonthlySequence, [13], set(), id="monthly"
-        ),
+        pytest.param({"type": "monthly", "days": 13}, MonthlySequence, [13], set(), id="monthly"),
         pytest.param(
             {"type": "monthly", "days": [7, 21]},
             MonthlySequence,
@@ -447,9 +434,7 @@ def test_sequence_from_dict(
     "seq_dict, expect_msg",
     [
         pytest.param({}, "^Sequence dictionary must contain `type` key$", id="notype"),
-        pytest.param(
-            {"type": "sesquiannual"}, "^Unknown type 'sesquiannual'$", id="unknowntype"
-        ),
+        pytest.param({"type": "sesquiannual"}, "^Unknown type 'sesquiannual'$", id="unknowntype"),
         pytest.param(
             {"type": "weekly"},
             "^Weekly sequence must provide `days`$",
@@ -472,9 +457,7 @@ def test_create_sequence_invalid(seq_dict: dict, expect_msg: str):
         Sequence.from_dict(seq_dict)
 
 
-def test_sequence_from_resource(
-    monkeypatch: pytest.MonkeyPatch, tmp_path_factory: pytest.TempPathFactory
-):
+def test_sequence_from_resource(monkeypatch: pytest.MonkeyPatch, tmp_path_factory: pytest.TempPathFactory):
     seq = Sequence.from_resource("ecmwf-mon-thu")
     assert type(seq) is WeeklySequence
     assert seq.days == [MONDAY, THURSDAY]
@@ -483,12 +466,8 @@ def test_sequence_from_resource(
         Sequence.from_resource("invalid-sequence")
 
     seq_path1 = tmp_path_factory.mktemp("seqs1")
-    (seq_path1 / "wednesdays.yaml").write_text(
-        yaml.safe_dump({"type": "weekly", "days": ["Wednesday"]})
-    )
-    (seq_path1 / "foo.yaml").write_text(
-        yaml.safe_dump({"type": "monthly", "days": [2, 4, 6, 8]})
-    )
+    (seq_path1 / "wednesdays.yaml").write_text(yaml.safe_dump({"type": "weekly", "days": ["Wednesday"]}))
+    (seq_path1 / "foo.yaml").write_text(yaml.safe_dump({"type": "monthly", "days": [2, 4, 6, 8]}))
 
     seq_path2 = tmp_path_factory.mktemp("seqs2")
     (seq_path2 / "foo.yaml").write_text(yaml.safe_dump({"type": "daily"}))
@@ -496,11 +475,7 @@ def test_sequence_from_resource(
         yaml.safe_dump(
             {
                 "type": "yearly",
-                "days": [
-                    (m, d)
-                    for m in range(1, 13)
-                    for d in range(1, month_length(1999, m) + 1, 4)
-                ],
+                "days": [(m, d) for m in range(1, 13) for d in range(1, month_length(1999, m) + 1, 4)],
             }
         )
     )
@@ -526,9 +501,7 @@ def test_sequence_from_resource(
     "name, args, kwargs, expect_type, expect_days, expect_excludes",
     [
         pytest.param("daily", (), {}, DailySequence, None, set(), id="daily"),
-        pytest.param(
-            "daily", ({31},), {}, DailySequence, None, {31}, id="daily-excludes"
-        ),
+        pytest.param("daily", ({31},), {}, DailySequence, None, {31}, id="daily-excludes"),
         pytest.param(
             "daily",
             (),
@@ -538,9 +511,7 @@ def test_sequence_from_resource(
             {31},
             id="daily-excludes-kw",
         ),
-        pytest.param(
-            "weekly", (2,), {}, WeeklySequence, [WEDNESDAY], None, id="weekly"
-        ),
+        pytest.param("weekly", (2,), {}, WeeklySequence, [WEDNESDAY], None, id="weekly"),
         pytest.param(
             "weekly",
             (),
@@ -587,9 +558,7 @@ def test_sequence_from_resource(
             {(2, 29)},
             id="monthly-excludes-mix",
         ),
-        pytest.param(
-            "yearly", ((7, 1),), {}, YearlySequence, [(7, 1)], set(), id="yearly"
-        ),
+        pytest.param("yearly", ((7, 1),), {}, YearlySequence, [(7, 1)], set(), id="yearly"),
         pytest.param(
             "yearly",
             (),
@@ -626,9 +595,7 @@ def test_sequence_from_resource(
             {(2020, 4, 1)},
             id="yearly-excludes-mix",
         ),
-        pytest.param(
-            "dict", ({"type": "daily"},), {}, DailySequence, None, set(), id="dict"
-        ),
+        pytest.param("dict", ({"type": "daily"},), {}, DailySequence, None, set(), id="dict"),
         pytest.param(
             "dict",
             (),
@@ -656,9 +623,7 @@ def test_sequence_from_resource(
             None,
             id="resource-kw",
         ),
-        pytest.param(
-            "file", ("seqs/foo.yaml",), {}, DailySequence, None, {13}, id="file"
-        ),
+        pytest.param("file", ("seqs/foo.yaml",), {}, DailySequence, None, {13}, id="file"),
         pytest.param(
             "file",
             (),
@@ -683,12 +648,8 @@ def test_create_sequence(
     if name == "file":
         seq_dir = tmp_path / "seqs"
         seq_dir.mkdir(parents=True, exist_ok=True)
-        (seq_dir / "foo.yaml").write_text(
-            yaml.safe_dump({"type": "daily", "excludes": [13]})
-        )
-        (seq_dir / "bar.yaml").write_text(
-            yaml.safe_dump({"type": "yearly", "days": (1, 1)})
-        )
+        (seq_dir / "foo.yaml").write_text(yaml.safe_dump({"type": "daily", "excludes": [13]}))
+        (seq_dir / "bar.yaml").write_text(yaml.safe_dump({"type": "yearly", "days": (1, 1)}))
         monkeypatch.chdir(tmp_path)
 
     seq = create_sequence(name, *args, **kwargs)

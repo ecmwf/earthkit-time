@@ -88,18 +88,14 @@ def add_sequence_args(parser: argparse.ArgumentParser):
     )
 
 
-def create_sequence(
-    parser: argparse.ArgumentParser, args: argparse.Namespace
-) -> Sequence:
+def create_sequence(parser: argparse.ArgumentParser, args: argparse.Namespace) -> Sequence:
     seq = None
     try:
         if args.daily:
             try:
                 excludes = [int(elem) for elem in args.exclude]
             except ValueError as e:
-                raise ValueError(
-                    "Invalid excludes, must be a slash-separated list of days"
-                ) from e
+                raise ValueError("Invalid excludes, must be a slash-separated list of days") from e
             seq = DailySequence(excludes=excludes)
         elif args.weekly is not None:
             seq = WeeklySequence(args.weekly)
@@ -138,9 +134,7 @@ def _eval_escape(m: re.Match) -> str:
 
 
 def escaped_str(arg: str) -> str:
-    return re.sub(
-        r"\\([\\0abfnrtv]|x[0-9a-f]{2}|[0-3][0-7]{2})", _eval_escape, arg, flags=re.I
-    )
+    return re.sub(r"\\([\\0abfnrtv]|x[0-9a-f]{2}|[0-3][0-7]{2})", _eval_escape, arg, flags=re.I)
 
 
 SEP_EPILOG = """

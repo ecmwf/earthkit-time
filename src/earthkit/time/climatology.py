@@ -64,7 +64,6 @@ def date_range(
     >>> list(date_range(date(2014, 8, 23), RelativeYear(-3), RelativeYear(-1)))
     [datetime.date(2011, 8, 23), datetime.date(2012, 8, 23), datetime.date(2013, 8, 23)]
     """
-
     _known_recurrences = ["yearly"]
     if recurrence not in _known_recurrences:
         known = ", ".join(_known_recurrences)
@@ -152,7 +151,4 @@ def model_climate_dates(
         before = timedelta(days=before)
     if not isinstance(after, timedelta):
         after = timedelta(days=after)
-    yield from merge_sorted(
-        date_range(d, start, end)
-        for d in sequence.range(reference - before, reference + after)
-    )
+    yield from merge_sorted(date_range(d, start, end) for d in sequence.range(reference - before, reference + after))
