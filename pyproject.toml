@@ -47,8 +47,10 @@ earthkit-datetime = "earthkit.time.cli.datetime:main"
 Homepage = "https://github.com/ecmwf/earthkit-time/"
 Documentation = "https://earthkit-time.readthedocs.io"
 
-[tool.isort]
-profile = "black"
+[tool.ruff]
+line-length = 120
+lint.select = [ "E", "F", "I" ]
+lint.isort.force-single-line = true
 
 [tool.pytest.ini_options]
 minversion = "8.1"
