@@ -2,9 +2,9 @@ import argparse
 import re
 from typing import List, Tuple
 
-from ..calendar import Weekday, parse_date, parse_mmdd, to_weekday
-from ..climatology import RelativeYear
-from ..sequence import (
+from earthkit.time.calendar import Weekday, parse_date, parse_mmdd, to_weekday
+from earthkit.time.climatology import RelativeYear
+from earthkit.time.sequence import (
     DailySequence,
     MonthlySequence,
     Sequence,

@@ -2,10 +2,9 @@ import argparse
 import textwrap
 from typing import List, Optional
 
-from ..calendar import parse_date
-from ..climatology import date_range, model_climate_dates
-from .actions import ActionParser
-from .cliargs import (
+from earthkit.time.calendar import parse_date
+from earthkit.time.cli.actions import ActionParser
+from earthkit.time.cli.cliargs import (
     SEP_EPILOG,
     SEQ_EPILOG,
     add_sep_arg,
@@ -13,7 +12,8 @@ from .cliargs import (
     create_sequence,
     relative_year,
 )
-from .cliout import format_date_list
+from earthkit.time.cli.cliout import format_date_list
+from earthkit.time.climatology import date_range, model_climate_dates
 
 
 def date_range_action(parser: argparse.ArgumentParser, args: argparse.Namespace):

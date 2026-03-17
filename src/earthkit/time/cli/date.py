@@ -2,9 +2,9 @@ import argparse
 from datetime import timedelta
 from typing import List, Optional
 
-from ..calendar import parse_date
-from .actions import ActionParser
-from .cliout import format_date
+from earthkit.time.calendar import parse_date
+from earthkit.time.cli.actions import ActionParser
+from earthkit.time.cli.cliout import format_date
 
 
 def date_shift_action(parser: argparse.ArgumentParser, args: argparse.Namespace):
