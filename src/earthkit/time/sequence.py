@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from datetime import date, timedelta
 from typing import Container, Dict, Iterable, Iterator, Optional, Tuple, Type, Union
 
-from .calendar import (
+from earthkit.time.calendar import (
     MonthInYear,
     Weekday,
     day_exists,
@@ -11,11 +11,12 @@ from .calendar import (
     parse_mmdd,
     to_weekday,
 )
+
 from .data import load_yaml
 
 
 class Sequence(ABC):
-    """Abstract representation of a sequence of dates
+    """Abstract representation of a sequence of dates.
 
     Minimal implementation requirement: ``__contains__``. Implementing ``next``
     and ``previous`` is highly recommended for efficiency.
@@ -91,10 +92,8 @@ class Sequence(ABC):
             yield current
             current = self.next(current)
 
-    def bracket(
-        self, reference: date, num: Union[int, Tuple[int, int]] = 1, strict: bool = True
-    ) -> Iterator[date]:
-        """Return matching dates around ``reference``
+    def bracket(self, reference: date, num: Union[int, Tuple[int, int]] = 1, strict: bool = True) -> Iterator[date]:
+        """Return matching dates around ``reference``.
 
         Parameters
         ----------
@@ -131,7 +130,7 @@ class Sequence(ABC):
     @classmethod
     @abstractmethod
     def _from_dict(cls, seq_dict: dict) -> "Sequence":
-        """Create a specific sequence from the given dictionary
+        """Create a specific sequence from the given dictionary.
 
         Dictionary contents can vary depending on the sequence. Frequent items are:
         * ``days``: list of recurring days
@@ -154,7 +153,7 @@ class Sequence(ABC):
 
     @classmethod
     def from_dict(cls, seq_dict: dict) -> "Sequence":
-        """Create a sequence from the given dictionary
+        """Create a sequence from the given dictionary.
 
         The type of sequence is specified by the ``type`` key, and must match
         one of the known sequences, e.g. ``daily``, ``weekly``, ``monthly``,
@@ -176,7 +175,7 @@ class Sequence(ABC):
 
     @classmethod
     def from_resource(cls, name: str) -> "Sequence":
-        """Load a sequence from a resource file
+        """Load a sequence from a resource file.
 
         ``name`` should be either the name of a known sequence (in
         ``earthkit.time.data.sequences`` or ``EARTHKIT_TIME_SEQ_PATH``,
@@ -185,16 +184,14 @@ class Sequence(ABC):
         Raises :class:`FileNotFoundError` if no corresponding resource is found
         """
         path = name if os.path.isfile(name) else None
-        seq_dict = load_yaml(
-            f"sequences/{name}.yaml", path, env_path="EARTHKIT_TIME_SEQ_PATH"
-        )
+        seq_dict = load_yaml(f"sequences/{name}.yaml", path, env_path="EARTHKIT_TIME_SEQ_PATH")
         if not isinstance(seq_dict, dict):
             raise ValueError("Invalid resource file")
         return cls.from_dict(seq_dict)
 
 
 class DailySequence(Sequence, seqname="daily"):
-    """Sequence of consecutive dates
+    """Sequence of consecutive dates.
 
     Any day number (in the month) present in ``excludes`` will be skipped
 
@@ -219,7 +216,7 @@ class DailySequence(Sequence, seqname="daily"):
 
 
 class WeeklySequence(Sequence, seqname="weekly"):
-    """Sequence of dates happening on given days of each week
+    """Sequence of dates happening on given days of each week.
 
     Can be created from a :class:`dict` with items:
 
@@ -282,7 +279,7 @@ class WeeklySequence(Sequence, seqname="weekly"):
 
 
 class MonthlySequence(Sequence, seqname="monthly"):
-    """Sequence of dates happening on given days of each month
+    """Sequence of dates happening on given days of each month.
 
     Any ``(month, day)`` tuple present in ``excludes`` will be skipped
 
@@ -310,10 +307,7 @@ class MonthlySequence(Sequence, seqname="monthly"):
         self.excludes = excludes
 
     def __contains__(self, reference: date) -> bool:
-        return (
-            reference.day in self.days
-            and (reference.month, reference.day) not in self.excludes
-        )
+        return reference.day in self.days and (reference.month, reference.day) not in self.excludes
 
     def __repr__(self) -> str:
         return f"MonthlySequence(days={self.days!r}, excludes={self.excludes!r})"
@@ -326,9 +320,7 @@ class MonthlySequence(Sequence, seqname="monthly"):
             (
                 day
                 for day in self.days
-                if day > reference.day
-                and day in ymonth
-                and (ymonth.month, day) not in self.excludes
+                if day > reference.day and day in ymonth and (ymonth.month, day) not in self.excludes
             ),
             None,
         )
@@ -348,9 +340,7 @@ class MonthlySequence(Sequence, seqname="monthly"):
             (
                 day
                 for day in self.days[::-1]
-                if day < reference.day
-                and day in ymonth
-                and (ymonth.month, day) not in self.excludes
+                if day < reference.day and day in ymonth and (ymonth.month, day) not in self.excludes
             ),
             None,
         )
@@ -371,7 +361,7 @@ class MonthlySequence(Sequence, seqname="monthly"):
 
 
 class YearlySequence(Sequence, seqname="yearly"):
-    """Sequence of dates happening on given days of each year (in (month, day) format)
+    """Sequence of dates happening on given days of each year (in (month, day) format).
 
     Can be created from a :class:`dict` with items:
 
@@ -387,11 +377,7 @@ class YearlySequence(Sequence, seqname="yearly"):
         days: Union[Tuple[int, int], Iterable[Tuple[int, int]]],
         excludes: Container[date] = set(),
     ):
-        if (
-            isinstance(days, tuple)
-            and len(days) == 2
-            and all(isinstance(day, int) for day in days)
-        ):
+        if isinstance(days, tuple) and len(days) == 2 and all(isinstance(day, int) for day in days):
             self.days = [days]
         else:
             self.days = sorted(days)
@@ -424,10 +410,7 @@ class YearlySequence(Sequence, seqname="yearly"):
         while new_day is None:
             year += 1
             for month, day in self.days:
-                if (
-                    day_exists(year, month, day)
-                    and date(year, month, day) not in self.excludes
-                ):
+                if day_exists(year, month, day) and date(year, month, day) not in self.excludes:
                     new_month = month
                     new_day = day
                     break
@@ -451,10 +434,7 @@ class YearlySequence(Sequence, seqname="yearly"):
         while new_day is None:
             year -= 1
             for month, day in self.days[::-1]:
-                if (
-                    day_exists(year, month, day)
-                    and date(year, month, day) not in self.excludes
-                ):
+                if day_exists(year, month, day) and date(year, month, day) not in self.excludes:
                     new_month = month
                     new_day = day
                     break
@@ -474,7 +454,7 @@ class YearlySequence(Sequence, seqname="yearly"):
 
 
 def create_sequence(type_: str, *args, **kwargs) -> Sequence:
-    """Create a sequence
+    """Create a sequence.
 
     This is a wrapper around the following constructors and factory methods. Any
     extra arguments (positional or keyword) are passed to the corresponding

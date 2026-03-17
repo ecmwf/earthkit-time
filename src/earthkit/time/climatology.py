@@ -1,16 +1,16 @@
-"""Date utilities to build a climatology"""
+"""Date utilities to build a climatology."""
 
 from dataclasses import dataclass
 from datetime import date, timedelta
 from typing import Iterator, Union
 
-from .sequence import Sequence, YearlySequence
-from .utilities import merge_sorted
+from earthkit.time.sequence import Sequence, YearlySequence
+from earthkit.time.utilities import merge_sorted
 
 
 @dataclass
 class RelativeYear:
-    """Wrapper for a year intended to be relative to a reference"""
+    """Wrapper for a year intended to be relative to a reference."""
 
     value: int
 
@@ -27,7 +27,7 @@ def date_range(
     recurrence: str = "yearly",
     include_endpoint: bool = True,
 ) -> Iterator[date]:
-    """Generate a sequence of dates following a recurrence pattern
+    """Generate a sequence of dates following a recurrence pattern.
 
     If the reference date is February 29th on a leap year, it will be replaced
     by February 28th for every year in the output.
@@ -64,7 +64,6 @@ def date_range(
     >>> list(date_range(date(2014, 8, 23), RelativeYear(-3), RelativeYear(-1)))
     [datetime.date(2011, 8, 23), datetime.date(2012, 8, 23), datetime.date(2013, 8, 23)]
     """
-
     _known_recurrences = ["yearly"]
     if recurrence not in _known_recurrences:
         known = ", ".join(_known_recurrences)
@@ -96,7 +95,7 @@ def model_climate_dates(
     after: Union[timedelta, int],
     sequence: Sequence,
 ) -> Iterator[date]:
-    """Generate a set of dates for a model climate
+    """Generate a set of dates for a model climate.
 
     The set is created by combining yearly dates between ``start`` and ``end``,
     for each date between ``reference - before`` and ``reference + after``. If
@@ -152,7 +151,4 @@ def model_climate_dates(
         before = timedelta(days=before)
     if not isinstance(after, timedelta):
         after = timedelta(days=after)
-    yield from merge_sorted(
-        date_range(d, start, end)
-        for d in sequence.range(reference - before, reference + after)
-    )
+    yield from merge_sorted(date_range(d, start, end) for d in sequence.range(reference - before, reference + after))

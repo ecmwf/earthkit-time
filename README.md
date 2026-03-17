@@ -31,7 +31,7 @@
   <a href="https://earthkit-time.readthedocs.io">Documentation</a>
 </p>
 
-> \[!IMPORTANT\]
+> [!IMPORTANT]
 > This software is **Emerging** and subject to ECMWF's guidelines on [Software Maturity](https://github.com/ecmwf/codex/raw/refs/heads/main/Project%20Maturity).
 
 **earthkit-time** is a package containing date and time manipulation routines for the use of weather data. It is a component of [earthkit](https://github.com/ecmwf/earthkit).
@@ -41,6 +41,7 @@
 The documentation can be found at https://earthkit-time.readthedocs.io.
 
 ## Installation
+
 Install from PyPI:
 
 ```

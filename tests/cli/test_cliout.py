@@ -6,9 +6,7 @@ import pytest
 from earthkit.time.cli.cliout import format_date, format_date_list
 
 
-@pytest.mark.parametrize(
-    "ymd, expected", [((1999, 11, 22), "19991122"), ((2000, 1, 3), "20000103")]
-)
+@pytest.mark.parametrize("ymd, expected", [((1999, 11, 22), "19991122"), ((2000, 1, 3), "20000103")])
 def test_format_date(ymd: Tuple[int, int, int], expected: str):
     assert format_date(date(*ymd)) == expected
 
@@ -32,9 +30,7 @@ def test_format_date(ymd: Tuple[int, int, int], expected: str):
         ([(1999, 5, 8), (2003, 2, 4)], ", ", "19990508, 20030204"),
     ],
 )
-def test_format_date_list(
-    dates: List[Tuple[int, int, int]], sep: Optional[str], expected: str
-):
+def test_format_date_list(dates: List[Tuple[int, int, int]], sep: Optional[str], expected: str):
     if sep is None:
         assert format_date_list([date(*ymd) for ymd in dates]) == expected
     else:

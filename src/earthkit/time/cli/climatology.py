@@ -2,10 +2,9 @@ import argparse
 import textwrap
 from typing import List, Optional
 
-from ..calendar import parse_date
-from ..climatology import date_range, model_climate_dates
-from .actions import ActionParser
-from .cliargs import (
+from earthkit.time.calendar import parse_date
+from earthkit.time.cli.actions import ActionParser
+from earthkit.time.cli.cliargs import (
     SEP_EPILOG,
     SEQ_EPILOG,
     add_sep_arg,
@@ -13,7 +12,8 @@ from .cliargs import (
     create_sequence,
     relative_year,
 )
-from .cliout import format_date_list
+from earthkit.time.cli.cliout import format_date_list
+from earthkit.time.climatology import date_range, model_climate_dates
 
 
 def date_range_action(parser: argparse.ArgumentParser, args: argparse.Namespace):
@@ -33,9 +33,7 @@ def model_climate_action(parser: argparse.ArgumentParser, args: argparse.Namespa
 
 
 def get_parser() -> argparse.ArgumentParser:
-    parser = ActionParser(
-        description="Tools to compute model climate dates", fromfile_prefix_chars="@"
-    )
+    parser = ActionParser(description="Tools to compute model climate dates", fromfile_prefix_chars="@")
 
     range_action = parser.add_action(
         "range",
@@ -48,12 +46,8 @@ def get_parser() -> argparse.ArgumentParser:
     range_action.add_argument("date", type=parse_date, help="reference date")
 
     range_start_group = range_action.add_mutually_exclusive_group(required=True)
-    range_start_group.add_argument(
-        "--from-date", type=parse_date, dest="start", help="starting date"
-    )
-    range_start_group.add_argument(
-        "--from-year", type=int, dest="start", help="starting year"
-    )
+    range_start_group.add_argument("--from-date", type=parse_date, dest="start", help="starting date")
+    range_start_group.add_argument("--from-year", type=int, dest="start", help="starting year")
     range_start_group.add_argument(
         "--from-rel-year",
         type=relative_year,
@@ -62,9 +56,7 @@ def get_parser() -> argparse.ArgumentParser:
     )
 
     range_end_group = range_action.add_mutually_exclusive_group(required=True)
-    range_end_group.add_argument(
-        "--to-date", type=parse_date, dest="end", help="ending date"
-    )
+    range_end_group.add_argument("--to-date", type=parse_date, dest="end", help="ending date")
     range_end_group.add_argument("--to-year", type=int, dest="end", help="ending year")
     range_end_group.add_argument(
         "--to-rel-year",
@@ -91,12 +83,8 @@ def get_parser() -> argparse.ArgumentParser:
     mclim_action.add_argument("date", type=parse_date, help="reference date")
 
     mclim_start_group = mclim_action.add_mutually_exclusive_group(required=True)
-    mclim_start_group.add_argument(
-        "--from-date", type=parse_date, dest="start", help="starting date"
-    )
-    mclim_start_group.add_argument(
-        "--from-year", type=int, dest="start", help="starting year"
-    )
+    mclim_start_group.add_argument("--from-date", type=parse_date, dest="start", help="starting date")
+    mclim_start_group.add_argument("--from-year", type=int, dest="start", help="starting year")
     mclim_start_group.add_argument(
         "--from-rel-year",
         type=relative_year,
@@ -105,9 +93,7 @@ def get_parser() -> argparse.ArgumentParser:
     )
 
     mclim_end_group = mclim_action.add_mutually_exclusive_group(required=True)
-    mclim_end_group.add_argument(
-        "--to-date", type=parse_date, dest="end", help="ending date"
-    )
+    mclim_end_group.add_argument("--to-date", type=parse_date, dest="end", help="ending date")
     mclim_end_group.add_argument("--to-year", type=int, dest="end", help="ending year")
     mclim_end_group.add_argument(
         "--to-rel-year",

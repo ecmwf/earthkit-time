@@ -5,7 +5,7 @@ from typing import Tuple, Union
 
 
 class Weekday(IntEnum):
-    """:class:`enum.IntEnum` representing week days"""
+    """:class:`enum.IntEnum` representing week days."""
 
     MONDAY = 0
     TUESDAY = 1
@@ -26,7 +26,7 @@ SUNDAY = Weekday.SUNDAY
 
 
 def to_weekday(arg: Union[int, str]) -> Weekday:
-    """Convert integers and strings to weekdays
+    """Convert integers and strings to weekdays.
 
     Any unambiguous prefix of a weekday name will be accepted, and case is
     ignored.
@@ -65,7 +65,7 @@ _MONTH_LENGTHS = [
 
 
 def month_length(year: int, month: int) -> int:
-    """Return the number of days of a given month"""
+    """Return the number of days of a given month."""
     if month < 1 or month > 12:
         raise ValueError(f"Invalid month: {month}")
     mlen = _MONTH_LENGTHS[month]
@@ -75,7 +75,7 @@ def month_length(year: int, month: int) -> int:
 
 
 def day_exists(year: int, month: int, day: int) -> bool:
-    """Check whether a given day exists in the calendar"""
+    """Check whether a given day exists in the calendar."""
     if month < 1 or month > 12:
         return False
     if day < 1 or day > month_length(year, month):
@@ -84,7 +84,7 @@ def day_exists(year: int, month: int, day: int) -> bool:
 
 
 class MonthInYear:
-    """Represent a given month in a year"""
+    """Represent a given month in a year."""
 
     year: int
     month: int
@@ -107,24 +107,24 @@ class MonthInYear:
         return True
 
     def length(self) -> int:
-        """Returns the number of days in the given month"""
+        """Returns the number of days in the given month."""
         return month_length(self.year, self.month)
 
     def next(self) -> "MonthInYear":
-        """Return the following month"""
+        """Return the following month."""
         d, m = divmod(self.month, 12)
         m += 1
         return MonthInYear(self.year + d, m)
 
     def previous(self) -> "MonthInYear":
-        """Return the previous month"""
+        """Return the previous month."""
         d, m = divmod(self.month - 2, 12)
         m += 1
         return MonthInYear(self.year + d, m)
 
 
 def parse_mmdd(arg: Union[Tuple[int, int], str]) -> Tuple[int, int]:
-    """Convert pairs of ints or MMDD strings into (month, day) pairs"""
+    """Convert pairs of ints or MMDD strings into (month, day) pairs."""
     if not isinstance(arg, str):
         m, d = arg
         if not day_exists(2000, m, d):
@@ -146,7 +146,7 @@ def parse_mmdd(arg: Union[Tuple[int, int], str]) -> Tuple[int, int]:
 
 
 def parse_date(arg: Union[str, Tuple[int, int, int]]) -> date:
-    """Convert triples of ints or YYYYMMDD strings into date objects"""
+    """Convert triples of ints or YYYYMMDD strings into date objects."""
     if not isinstance(arg, str):
         y, m, d = arg
         if not day_exists(y, m, d):
@@ -169,7 +169,7 @@ def parse_date(arg: Union[str, Tuple[int, int, int]]) -> date:
 
 
 def parse_datetime(arg: Union[str, Tuple[int, int, int, int]]) -> datetime:
-    """Convert quadruplets of ints or YYYYMMDDHH strings into datetime objects"""
+    """Convert quadruplets of ints or YYYYMMDDHH strings into datetime objects."""
     if not isinstance(arg, str):
         y, m, d, h = arg
         if not day_exists(y, m, d) or not 0 <= h <= 23:

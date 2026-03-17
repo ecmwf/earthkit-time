@@ -2,9 +2,9 @@ import argparse
 from datetime import timedelta
 from typing import List, Optional
 
-from ..calendar import parse_datetime
-from .actions import ActionParser
-from .cliout import format_datetime
+from earthkit.time.calendar import parse_datetime
+from earthkit.time.cli.actions import ActionParser
+from earthkit.time.cli.cliout import format_datetime
 
 
 def datetime_shift_action(parser: argparse.ArgumentParser, args: argparse.Namespace):
@@ -26,12 +26,8 @@ def get_parser() -> argparse.ArgumentParser:
         help="shift a datetime",
         description="Shift a datetime by the given number of hours",
     )
-    shift_action.add_argument(
-        "datetime", type=parse_datetime, help="reference datetime"
-    )
-    shift_action.add_argument(
-        "hours", type=int, help="number of hours (can be negative)"
-    )
+    shift_action.add_argument("datetime", type=parse_datetime, help="reference datetime")
+    shift_action.add_argument("hours", type=int, help="number of hours (can be negative)")
 
     diff_action = parser.add_action(
         "diff",
@@ -39,12 +35,8 @@ def get_parser() -> argparse.ArgumentParser:
         help="subtract two datetimes",
         description="Subtract DATETIME2 from DATETIME1, returning the number of hours",
     )
-    diff_action.add_argument(
-        "datetime1", type=parse_datetime, help="first datetime (+)"
-    )
-    diff_action.add_argument(
-        "datetime2", type=parse_datetime, help="second datetime (-)"
-    )
+    diff_action.add_argument("datetime1", type=parse_datetime, help="first datetime (+)")
+    diff_action.add_argument("datetime2", type=parse_datetime, help="second datetime (-)")
 
     return parser
 

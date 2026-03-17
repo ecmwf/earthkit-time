@@ -31,4 +31,3 @@ Built-in Sequences
 .. autoclass:: MonthlySequence
 
 .. autoclass:: YearlySequence
-

@@ -47,9 +47,7 @@ def test_date_range_leapyear():
     ]
 
     # end is leap (2)
-    assert list(
-        date_range(date(2022, 2, 28), date(2020, 2, 28), date(2024, 2, 29))
-    ) == [
+    assert list(date_range(date(2022, 2, 28), date(2020, 2, 28), date(2024, 2, 29))) == [
         date(2020, 2, 28),
         date(2021, 2, 28),
         date(2022, 2, 28),
@@ -66,9 +64,7 @@ def test_date_range_leapyear():
     ]
 
     # start and end are leap (2)
-    assert list(
-        date_range(date(2022, 2, 28), date(2020, 2, 29), date(2024, 2, 29))
-    ) == [
+    assert list(date_range(date(2022, 2, 28), date(2020, 2, 29), date(2024, 2, 29))) == [
         date(2021, 2, 28),
         date(2022, 2, 28),
         date(2023, 2, 28),
@@ -83,9 +79,7 @@ def test_date_range_leapyear():
     ]
 
     # reference and end are leap
-    assert list(
-        date_range(date(2020, 2, 29), date(2017, 2, 28), date(2020, 2, 29))
-    ) == [
+    assert list(date_range(date(2020, 2, 29), date(2017, 2, 28), date(2020, 2, 29))) == [
         date(2017, 2, 28),
         date(2018, 2, 28),
         date(2019, 2, 28),
@@ -93,9 +87,7 @@ def test_date_range_leapyear():
     ]
 
     # all dates are leap
-    assert list(
-        date_range(date(2020, 2, 29), date(2016, 2, 29), date(2020, 2, 29))
-    ) == [
+    assert list(date_range(date(2020, 2, 29), date(2016, 2, 29), date(2020, 2, 29))) == [
         date(2017, 2, 28),
         date(2018, 2, 28),
         date(2019, 2, 28),
@@ -116,11 +108,7 @@ def test_model_climate_dates():
             timedelta(days=7),
             WeeklySequence([MONDAY, THURSDAY]),
         )
-    ) == [
-        date(y, m, d)
-        for y in range(2020, 2024)
-        for m, d in [(2, 22), (2, 26), (2, 28), (3, 4), (3, 7)]
-    ]
+    ) == [date(y, m, d) for y in range(2020, 2024) for m, d in [(2, 22), (2, 26), (2, 28), (3, 4), (3, 7)]]
 
     assert list(
         model_climate_dates(
@@ -131,11 +119,7 @@ def test_model_climate_dates():
             timedelta(days=10),
             MonthlySequence(range(1, 32, 4), excludes=[(2, 29)]),
         )
-    ) == [
-        date(y, m, d)
-        for y in range(2020, 2024)
-        for m, d in [(2, 21), (2, 25), (3, 1), (3, 5), (3, 9)]
-    ]
+    ) == [date(y, m, d) for y in range(2020, 2024) for m, d in [(2, 21), (2, 25), (3, 1), (3, 5), (3, 9)]]
 
     assert list(
         model_climate_dates(

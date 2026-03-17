@@ -5,9 +5,7 @@ import pytest
 from earthkit.time.data import ResourceType, find_resource
 
 
-def test_find_resource(
-    monkeypatch: pytest.MonkeyPatch, tmp_path_factory: pytest.TempPathFactory
-):
+def test_find_resource(monkeypatch: pytest.MonkeyPatch, tmp_path_factory: pytest.TempPathFactory):
     # Packaged resources only
     assert find_resource("sequences/ecmwf-mon-thu.yaml")[0] == ResourceType.PACKAGED
     assert find_resource("sequences/nonexistent")[0] == ResourceType.NOTFOUND
@@ -32,10 +30,7 @@ def test_find_resource(
 
     # Non-existent path does not override
     assert (
-        find_resource(
-            "sequences/ecmwf-mon-thu.yaml", path=str(custom / "nonexistent.txt")
-        )[0]
-        == ResourceType.PACKAGED
+        find_resource("sequences/ecmwf-mon-thu.yaml", path=str(custom / "nonexistent.txt"))[0] == ResourceType.PACKAGED
     )
 
     # Resource by env file
@@ -49,17 +44,12 @@ def test_find_resource(
     # Non-existent env file
     with monkeypatch.context() as m:
         m.setenv("TEST_RES_FILE", str(custom / "nonexistent.txt"))
-        assert (
-            find_resource("sequences/test-hello", env_file="TEST_RES_FILE")[0]
-            == ResourceType.NOTFOUND
-        )
+        assert find_resource("sequences/test-hello", env_file="TEST_RES_FILE")[0] == ResourceType.NOTFOUND
 
     # Env file overrides packaged
     with monkeypatch.context() as m:
         m.setenv("TEST_RES_FILE", str(custom_seq))
-        assert find_resource(
-            "sequences/ecmwf-mon-thu.yaml", env_file="TEST_RES_FILE"
-        ) == (
+        assert find_resource("sequences/ecmwf-mon-thu.yaml", env_file="TEST_RES_FILE") == (
             ResourceType.FILE,
             str(custom_seq),
         )
@@ -67,10 +57,7 @@ def test_find_resource(
     # Non-existent env file does not override
     with monkeypatch.context() as m:
         m.setenv("TEST_RES_FILE", str(custom / "nonexistent.txt"))
-        assert (
-            find_resource("sequences/ecmwf-mon-thu.yaml", env_file="TEST_RES_FILE")[0]
-            == ResourceType.PACKAGED
-        )
+        assert find_resource("sequences/ecmwf-mon-thu.yaml", env_file="TEST_RES_FILE")[0] == ResourceType.PACKAGED
 
     other = tmp_path_factory.mktemp("other")
     other_foo = other / "foo.txt"
@@ -81,9 +68,7 @@ def test_find_resource(
     # Path overrides env file
     with monkeypatch.context() as m:
         m.setenv("TEST_RES_FILE", str(custom_foo))
-        assert find_resource(
-            "sequences/test-hello", path=str(other_foo), env_file="TEST_RES_FILE"
-        ) == (
+        assert find_resource("sequences/test-hello", path=str(other_foo), env_file="TEST_RES_FILE") == (
             ResourceType.FILE,
             str(other_foo),
         )
@@ -107,17 +92,12 @@ def test_find_resource(
     # Resource by env path, non-existent
     with monkeypatch.context() as m:
         m.setenv("TEST_RES_DIR", os.pathsep.join([str(custom), str(other)]))
-        assert (
-            find_resource("sequences/nonexistent", env_path="TEST_RES_DIR")[0]
-            == ResourceType.NOTFOUND
-        )
+        assert find_resource("sequences/nonexistent", env_path="TEST_RES_DIR")[0] == ResourceType.NOTFOUND
 
     # Env path overrides packaged
     with monkeypatch.context() as m:
         m.setenv("TEST_RES_DIR", os.pathsep.join([str(other), str(custom)]))
-        assert find_resource(
-            "sequences/ecmwf-mon-thu.yaml", env_path="TEST_RES_DIR"
-        ) == (
+        assert find_resource("sequences/ecmwf-mon-thu.yaml", env_path="TEST_RES_DIR") == (
             ResourceType.FILE,
             str(custom_seq),
         )
@@ -125,18 +105,13 @@ def test_find_resource(
     # Non-existent env path does not override
     with monkeypatch.context() as m:
         m.setenv("TEST_RES_DIR", os.pathsep.join([str(other / "nonexistent")]))
-        assert (
-            find_resource("sequences/ecmwf-mon-thu.yaml", env_path="TEST_RES_DIR")[0]
-            == ResourceType.PACKAGED
-        )
+        assert find_resource("sequences/ecmwf-mon-thu.yaml", env_path="TEST_RES_DIR")[0] == ResourceType.PACKAGED
 
     # Env file overrides env path
     with monkeypatch.context() as m:
         m.setenv("TEST_RES_FILE", str(other_bar))
         m.setenv("TEST_RES_DIR", os.pathsep.join([str(other), str(custom)]))
-        assert find_resource(
-            "sequences/foo.txt", env_file="TEST_RES_FILE", env_path="TEST_RES_DIR"
-        ) == (
+        assert find_resource("sequences/foo.txt", env_file="TEST_RES_FILE", env_path="TEST_RES_DIR") == (
             ResourceType.FILE,
             str(other_bar),
         )
@@ -144,9 +119,7 @@ def test_find_resource(
     # Path overrides env path
     with monkeypatch.context() as m:
         m.setenv("TEST_RES_DIR", os.pathsep.join([str(other), str(custom)]))
-        assert find_resource(
-            "sequences/foo.txt", path=str(other_bar), env_path="TEST_RES_DIR"
-        ) == (
+        assert find_resource("sequences/foo.txt", path=str(other_bar), env_path="TEST_RES_DIR") == (
             ResourceType.FILE,
             str(other_bar),
         )

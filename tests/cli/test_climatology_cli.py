@@ -74,11 +74,7 @@ def test_date_range_action(
                 "after": 7,
                 "weekly": [Weekday.MONDAY, Weekday.THURSDAY],
             },
-            "\n".join(
-                f"{y}{m:02d}{d:02d}"
-                for y in range(2020, 2024)
-                for m, d in [(5, 16), (5, 20), (5, 23), (5, 27)]
-            ),
+            "\n".join(f"{y}{m:02d}{d:02d}" for y in range(2020, 2024) for m, d in [(5, 16), (5, 20), (5, 23), (5, 27)]),
             id="weekly",
         ),
         pytest.param(
@@ -91,9 +87,7 @@ def test_date_range_action(
                 "monthly": [1, 5, 9, 13, 17, 21, 25, 29],
             },
             "\n".join(
-                f"{y}{m:02d}{d:02d}"
-                for y in range(2016, 2018)
-                for m, d in [(6, 25), (6, 29), (7, 1), (7, 5), (7, 9)]
+                f"{y}{m:02d}{d:02d}" for y in range(2016, 2018) for m, d in [(6, 25), (6, 29), (7, 1), (7, 5), (7, 9)]
             ),
             id="monthly",
         ),
@@ -107,11 +101,7 @@ def test_date_range_action(
                 "monthly": [1, 5, 9, 13, 17, 21, 25, 29],
                 "exclude": ["0229"],
             },
-            "\n".join(
-                f"{y}{m:02d}{d:02d}"
-                for y in range(2012, 2015)
-                for m, d in [(2, 25), (3, 1), (3, 5)]
-            ),
+            "\n".join(f"{y}{m:02d}{d:02d}" for y in range(2012, 2015) for m, d in [(2, 25), (3, 1), (3, 5)]),
             id="monthly-exclude",
         ),
         pytest.param(
@@ -155,9 +145,7 @@ def test_date_range_action(
         ),
     ],
 )
-def test_model_climate_action(
-    args: dict, expected: str, capsys: pytest.CaptureFixture[str]
-):
+def test_model_climate_action(args: dict, expected: str, capsys: pytest.CaptureFixture[str]):
     parser = argparse.ArgumentParser()
     args.setdefault("daily", False)
     args.setdefault("weekly", None)
