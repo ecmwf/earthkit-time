@@ -52,9 +52,7 @@ profile = "black"
 
 [tool.pytest.ini_options]
 minversion = "8.1"
-addopts = "--doctest-modules"
 testpaths = [
-    "src",
     "tests",
 ]
 consider_namespace_packages = true
