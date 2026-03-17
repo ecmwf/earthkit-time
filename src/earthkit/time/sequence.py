@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from datetime import date, timedelta
 from typing import Container, Dict, Iterable, Iterator, Optional, Tuple, Type, Union
 
-from .calendar import (
+from earthkit.time.calendar import (
     MonthInYear,
     Weekday,
     day_exists,
@@ -11,6 +11,7 @@ from .calendar import (
     parse_mmdd,
     to_weekday,
 )
+
 from .data import load_yaml
 
 

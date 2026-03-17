@@ -49,10 +49,8 @@ Homepage = "https://github.com/ecmwf/earthkit-time/"
 
 [tool.pytest.ini_options]
 addopts = "--doctest-modules"
-consider_namespace_packages = true
 minversion = "8.1"
 testpaths = [
-  "src",
   "tests"
 ]
 
