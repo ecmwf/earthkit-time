@@ -4,8 +4,8 @@ from dataclasses import dataclass
 from datetime import date, timedelta
 from typing import Iterator, Union
 
-from .sequence import Sequence, YearlySequence
-from .utilities import merge_sorted
+from earthkit.time.sequence import Sequence, YearlySequence
+from earthkit.time.utilities import merge_sorted
 
 
 @dataclass
