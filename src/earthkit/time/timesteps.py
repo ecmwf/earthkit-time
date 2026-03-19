@@ -239,6 +239,18 @@ def startdate_from_month(
         Forecast base time. The first day is assumed to be 1 if not provided.
     mstart: int
         Starting day for the month
+
+    Examples
+    --------
+    >>> from datetime import date
+    >>> startdate_from_month(1, (2026, 1))
+    datetime.date(2026, 1, 1)
+    >>> startdate_from_month(3, date(2024, 1, 15))
+    datetime.date(2024, 4, 1)
+    >>> startdate_from_month(5, date(2022, 1, 1), 15)
+    datetime.date(2022, 5, 15)
+    >>> startdate_from_month(6, date(2021, 8, 1))
+    datetime.date(2022, 1, 1)
     """
     base = _month_to_date(base, mstart)
     if base.day > mstart:
@@ -262,6 +274,22 @@ def month_from_startdate(
         Forecast base time. The first day is assumed to be 1 if not provided.
     start: :class:`~datetime.date`, :class:`~earthkit.time.calendar.MonthInYear`, ``(year, month)`` tuple
         Month start date. The first day is assumed to be 1 if not provided.
+
+    Examples
+    --------
+    >>> from datetime import date
+    >>> month_from_startdate((2026, 1), (2026, 1))
+    1
+    >>> month_from_startdate(date(2024, 1, 1), (2024, 3))
+    3
+    >>> month_from_startdate(date(2020, 1, 15), date(2020, 8, 1))
+    7
+    >>> month_from_startdate(date(2019, 1, 15), date(2019, 8, 15))
+    8
+    >>> month_from_startdate(date(2018, 1, 1), date(2018, 9, 15))
+    9
+    >>> month_from_startdate((2017, 4), date(2018, 1, 1))
+    10
     """
     mstart = start.day if isinstance(start, date) else 1
     base = _month_to_date(base, mstart)

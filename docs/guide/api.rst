@@ -281,13 +281,13 @@ date).
    >>> from datetime import date
    >>> from earthkit.time import startdate_from_month, month_from_startdate
    >>> startdate_from_month(1, (2026, 1))
-   date(2026, 1, 1)
+   datetime.date(2026, 1, 1)
    >>> startdate_from_month(3, date(2024, 1, 15))
-   date(2024, 4, 1)
+   datetime.date(2024, 4, 1)
    >>> startdate_from_month(5, date(2022, 1, 1), 15)
-   date(2022, 5, 15)
+   datetime.date(2022, 5, 15)
    >>> startdate_from_month(6, date(2021, 8, 1))
-   date(2022, 1, 1)
+   datetime.date(2022, 1, 1)
    >>> month_from_startdate((2026, 1), (2026, 1))
    1
    >>> month_from_startdate(date(2024, 1, 1), (2024, 3))
