@@ -17,6 +17,7 @@ from earthkit.time.calendar import (
 )
 from earthkit.time.timesteps import (
     day_from_range,
+    day_from_start,
     expand_range,
     hours_from_delta,
     month_from_range,
@@ -26,8 +27,11 @@ from earthkit.time.timesteps import (
     range_from_month,
     range_from_week,
     regular_ranges,
+    start_from_day,
     startdate_from_month,
+    startdate_from_week,
     week_from_range,
+    week_from_startdate,
 )
 
 
@@ -119,6 +123,54 @@ def test_hours_from_delta(delta: timedelta, expected: int):
     assert hours_from_delta(delta) == expected
 
 
+@pytest.mark.parametrize(
+    "day, base, daystart, expected",
+    [
+        pytest.param(
+            1, datetime(2020, 3, 28, 0), 0, datetime(2020, 3, 28, 0), id="1/0/0"
+        ),
+        pytest.param(
+            2,
+            datetime(2026, 7, 13, 12),
+            time(),
+            datetime(2026, 7, 15, 0),
+            id="2/12/time0",
+        ),
+        pytest.param(
+            3, datetime(2024, 9, 19, 0), 6, datetime(2024, 9, 21, 6), id="3/0/6"
+        ),
+        pytest.param(
+            4,
+            datetime(2022, 12, 9, 18),
+            time(14),
+            datetime(2022, 12, 13, 14),
+            id="4/18/time14",
+        ),
+    ],
+)
+def test_start_from_day(
+    day: int, base: datetime, daystart: Union[time, int], expected: datetime
+):
+    assert start_from_day(day, base, daystart) == expected
+
+
+@pytest.mark.parametrize(
+    "base, start, expected",
+    [
+        pytest.param(datetime(2020, 3, 28, 0), datetime(2020, 3, 28, 0), 1, id="1/0/0"),
+        pytest.param(
+            datetime(2026, 7, 13, 12), datetime(2026, 7, 15, 0), 2, id="2/12/time0"
+        ),
+        pytest.param(datetime(2024, 9, 19, 0), datetime(2024, 9, 21, 6), 3, id="3/0/6"),
+        pytest.param(
+            datetime(2022, 12, 9, 18), datetime(2022, 12, 13, 14), 4, id="4/18/time14"
+        ),
+    ],
+)
+def test_day_from_start(base: datetime, start: datetime, expected: int):
+    assert day_from_start(base, start) == expected
+
+
 day_range_params = [
     pytest.param(1, 0, 0, 0, id="1/0/0"),
     pytest.param(4, 12, 0, 12, id="4/12/0"),
@@ -160,6 +212,45 @@ def test_day_from_range_invalid():
 
     with pytest.raises(ValueError, match="Range '.+' does not align on a day"):
         day_from_range((1, 25))
+
+
+@pytest.mark.parametrize(
+    "week, base, weekstart, expected",
+    [
+        pytest.param(1, date(2021, 7, 19), None, date(2021, 7, 19), id="1/date/None"),
+        pytest.param(
+            2, datetime(2022, 3, 14, 15), None, date(2022, 3, 22), id="2/datetime/None"
+        ),
+        pytest.param(3, date(2023, 5, 17), MONDAY, date(2023, 6, 5), id="3/date/wday"),
+        pytest.param(
+            4,
+            datetime(2024, 2, 29, 22),
+            WEDNESDAY,
+            date(2024, 3, 27),
+            id="4/datetime/wday",
+        ),
+    ],
+)
+def test_startdate_from_week(
+    week: int,
+    base: Union[date, datetime],
+    weekstart: Union[Weekday, None],
+    expected: date,
+):
+    assert startdate_from_week(week, base, weekstart) == expected
+
+
+@pytest.mark.parametrize(
+    "base, start, expected",
+    [
+        pytest.param(date(2021, 7, 19), date(2021, 7, 19), 1, id="1/date"),
+        pytest.param(datetime(2022, 3, 14, 15), date(2022, 3, 22), 2, id="2/datetime"),
+        pytest.param(date(2023, 5, 17), date(2023, 6, 5), 3, id="3/date"),
+        pytest.param(datetime(2024, 2, 29, 22), date(2024, 3, 27), 4, id="4/datetime"),
+    ],
+)
+def test_week_from_startdate(base: Union[date, datetime], start: date, expected: int):
+    assert week_from_startdate(base, start) == expected
 
 
 week_range_params = [

@@ -71,6 +71,40 @@ def _daily_shift(
     return (daystart - base) % 24
 
 
+def start_from_day(
+    day: int, base: datetime, daystart: Union[time, int] = 0
+) -> datetime:
+    """Compute the start of the given day
+
+    Day 1 starts on the first time step with valid time ``daystart``.
+
+    Examples
+    --------
+    >>> from datetime import datetime, time
+    >>> start_from_day(1, datetime(2026, 9, 5))
+    datetime.datetime(2026, 9, 5, 0, 0)
+    >>> start_from_day(2, datetime(2026, 9, 5), 12)
+    datetime.datetime(2026, 9, 6, 12, 0)
+    >>> start_from_day(1, datetime(2026, 9, 5, 12), time(6))
+    datetime.datetime(2026, 9, 6, 6, 0)
+    """
+    shift = _daily_shift(base, daystart)
+    return base + timedelta(days=day - 1, hours=shift)
+
+
+def day_from_start(base: datetime, start: datetime) -> int:
+    """Compute the forecast day starting at the given datetime
+
+    Examples
+    --------
+    >>> day_from_start(datetime(2026, 9, 5), datetime(2026, 9, 7))
+    3
+    >>> day_from_start(datetime(2026, 9, 5, 12), datetime(2026, 9, 6, 6))
+    1
+    """
+    return (start - base).days + 1
+
+
 def range_from_day(
     day: int, base: Union[datetime, time, int] = 0, daystart: Union[time, int] = 0
 ) -> Tuple[int, int]:
@@ -150,6 +184,52 @@ def _weekly_shift(
         return shift
     else:
         raise TypeError(f"Invalid type for `weekstart`: {type(weekstart)!r}")
+
+
+def startdate_from_week(
+    week: int, base: Union[date, datetime], weekstart: Union[Weekday, None] = None
+) -> date:
+    """Compute the date of the first day of a forecast week
+
+    If no time component is present in ``base``, it is assumed to be 00:00. If
+    no week start is given, the first week is assumed to start on the first time
+    step with valid time 00:00.
+
+    This always returns a :class:`~datetime.date`.
+
+    Examples
+    --------
+    >>> from datetime import date, datetime
+    >>> from earthkit.time.calendar import WEDNESDAY
+    >>> startdate_from_week(2, date(2022, 1, 11))
+    datetime.date(2022, 1, 18)
+    >>> startdate_from_week(1, datetime(2025, 7, 22, 12), WEDNESDAY)  # 2025-07-22 is a Tuesday
+    datetime.date(2025, 7, 23)
+    """
+    shift = _weekly_shift(base, weekstart)
+    start = base + timedelta(hours=shift + _WEEK_IN_HOURS * (week - 1))
+    if isinstance(start, datetime):
+        start = start.date()
+    return start
+
+
+def week_from_startdate(base: Union[date, datetime], start: date) -> int:
+    """Compute the forecast week starting on the given date
+
+    Examples
+    --------
+    >>> from datetime import date, datetime
+    >>> week_from_startdate(date(2022, 1, 11), date(2022, 1, 18))
+    2
+    >>> week_from_startdate(datetime(2025, 7, 22, 12), datetime(2025, 7, 23))
+    1
+    """
+    if isinstance(base, datetime):
+        start = datetime.combine(start, time())
+        delta = (start - base).days
+    else:
+        delta = (start - base).days
+    return delta // 7 + 1
 
 
 def range_from_week(

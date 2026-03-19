@@ -206,8 +206,29 @@ The :func:`~earthkit.time.timesteps.hours_from_delta` function converts
    48
 
 
-Daily ranges
-~~~~~~~~~~~~
+Daily dates and ranges
+~~~~~~~~~~~~~~~~~~~~~~
+
+Daily date computations can be done with
+:func:`~earthkit.time.timesteps.start_from_day` and
+:func:`~earthkit.time.timesteps.day_from_start`. Both functions take a forecast
+base datetime. :func:`~earthkit.time.timesteps.start_from_day` optionally takes
+a start time for the day.
+
+.. code-block:: pycon
+
+   >>> from datetime import datetime, time
+   >>> from earthkit.time import start_from_day, day_from_start
+   >>> start_from_day(1, datetime(2026, 9, 5))
+   datetime.datetime(2026, 9, 5, 0, 0)
+   >>> start_from_day(2, datetime(2026, 9, 5), 12)
+   datetime.datetime(2026, 9, 6, 12, 0)
+   >>> start_from_day(1, datetime(2026, 9, 5, 12), time(6))
+   datetime.datetime(2026, 9, 6, 6, 0)
+   >>> day_from_start(datetime(2026, 9, 5), datetime(2026, 9, 7))
+   3
+   >>> day_from_start(datetime(2026, 9, 5, 12), datetime(2026, 9, 6, 6))
+   1
 
 Conversion between day numbers and the corresponding step ranges can be done
 with :func:`~earthkit.time.timesteps.range_from_day` and
@@ -231,8 +252,30 @@ day.
    1
 
 
-Weekly ranges
-~~~~~~~~~~~~~
+Weekly dates and ranges
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Weekly date computations can be done with
+:func:`~earthkit.time.timesteps.startdate_from_week` and
+:func:`~earthkit.time.timesteps.week_from_startdate`. Both functions take a
+forecast base date (or datetime).
+:func:`~earthkit.time.timesteps.start_from_day` optionally takes a starting day
+of the week. The first week starts on the first full day matching the given
+starting day (or the first full day if not given), at 00:00.
+
+.. code-block:: pycon
+
+   >>> from datetime import date, datetime
+   >>> from earthkit.time.calendar import WEDNESDAY
+   >>> from earthkit.time import startdate_from_week, week_from_startdate
+   >>> startdate_from_week(2, date(2022, 1, 11))
+   datetime.date(2022, 1, 18)
+   >>> startdate_from_week(1, datetime(2025, 7, 22, 12), WEDNESDAY)  # 2025-07-22 is a Tuesday
+   datetime.date(2025, 7, 23)
+   >>> week_from_startdate(date(2022, 1, 11), date(2022, 1, 18))
+   2
+   >>> week_from_startdate(datetime(2025, 7, 22, 12), datetime(2025, 7, 23))
+   1
 
 Conversion between week numbers and the corresponding step ranges can be done
 with :func:`~earthkit.time.timesteps.range_from_week` and

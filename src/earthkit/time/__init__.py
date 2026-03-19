@@ -9,6 +9,7 @@ from .sequence import (
 )
 from .timesteps import (
     day_from_range,
+    day_from_start,
     expand_range,
     hours_from_delta,
     month_from_range,
@@ -18,8 +19,11 @@ from .timesteps import (
     range_from_month,
     range_from_week,
     regular_ranges,
+    start_from_day,
     startdate_from_month,
+    startdate_from_week,
     week_from_range,
+    week_from_startdate,
 )
 
 __version__ = "0.1.8"
@@ -39,8 +43,12 @@ __all__ = [
     "regular_ranges",
     "expand_range",
     "hours_from_delta",
+    "start_from_day",
+    "day_from_start",
     "range_from_day",
     "day_from_range",
+    "startdate_from_week",
+    "week_from_startdate",
     "range_from_week",
     "week_from_range",
     "startdate_from_month",
