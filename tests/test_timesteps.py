@@ -192,16 +192,28 @@ def test_range_from_day(
     )
 
 
+@pytest.mark.parametrize(
+    "has_start, has_end",
+    [
+        pytest.param(True, True, id=""),
+        pytest.param(True, False, id="noend"),
+        pytest.param(False, True, id="nostart"),
+    ],
+)
 @pytest.mark.parametrize("day, base, daystart, shift", day_range_params)
 def test_day_from_range(
     day: int,
     base: Union[datetime, time, int],
     daystart: Union[time, int],
     shift: int,
+    has_start: bool,
+    has_end: bool,
 ):
+    start = (day - 1) * 24 + shift
+    end = day * 24 + shift
     steprange = (
-        (day - 1) * 24 + shift,
-        day * 24 + shift,
+        start if has_start else None,
+        end if has_end else None,
     )
     assert day_from_range(steprange, base, daystart) == day
 
@@ -212,6 +224,11 @@ def test_day_from_range_invalid():
 
     with pytest.raises(ValueError, match="Range '.+' does not align on a day"):
         day_from_range((1, 25))
+
+    with pytest.raises(
+        ValueError, match="At least one end of the range must be provided"
+    ):
+        day_from_range((None, None))
 
 
 @pytest.mark.parametrize(
@@ -283,6 +300,14 @@ def test_range_from_week(
 
 
 @pytest.mark.parametrize(
+    "has_start, has_end",
+    [
+        pytest.param(True, True, id=""),
+        pytest.param(True, False, id="noend"),
+        pytest.param(False, True, id="nostart"),
+    ],
+)
+@pytest.mark.parametrize(
     "week, base, weekstart, shift_days, shift_hours", week_range_params
 )
 def test_week_from_range(
@@ -291,10 +316,14 @@ def test_week_from_range(
     weekstart: Union[Weekday, None],
     shift_days: int,
     shift_hours: int,
+    has_start: bool,
+    has_end: bool,
 ):
+    start = ((week - 1) * 7 + shift_days) * 24 + shift_hours
+    end = (week * 7 + shift_days) * 24 + shift_hours
     steprange = (
-        ((week - 1) * 7 + shift_days) * 24 + shift_hours,
-        (week * 7 + shift_days) * 24 + shift_hours,
+        start if has_start else None,
+        end if has_end else None,
     )
     assert week_from_range(steprange, base, weekstart) == week
 
@@ -305,6 +334,11 @@ def test_week_from_range_invalid():
 
     with pytest.raises(ValueError, match="Range '.+' does not align on a week"):
         week_from_range((1, 7 * 24 + 1))
+
+    with pytest.raises(
+        ValueError, match="At least one end of the range must be provided"
+    ):
+        week_from_range((None, None))
 
 
 @pytest.mark.parametrize(
@@ -383,9 +417,19 @@ def test_range_from_month(
     assert range_from_month(month, base, mstart) == expected
 
 
+incomplete_month_range_params = [
+    pytest.param(1, date(2021, 1, 1), 1, (0, None), id="1/20210101-date/noend"),
+    pytest.param(2, date(2020, 1, 15), 1, (1104, None), id="2/20200115-date/noend"),
+    pytest.param(
+        3, date(2019, 1, 1), 15, (None, 2496), id="3/20190101-date/15/nostart"
+    ),
+    pytest.param(1, date(2016, 2, 1), 1, (None, 696), id="1/20160201-date/1/nostart"),
+]
+
+
 @pytest.mark.parametrize(
     "month, base, mstart, steprange",
-    month_range_params,
+    month_range_params + incomplete_month_range_params,
 )
 def test_month_from_range(
     month: int,
@@ -404,3 +448,8 @@ def test_month_from_range_invalid():
 
     with pytest.raises(ValueError, match="Range '.+' is not one month long"):
         month_from_range((0, 168), (2022, 1))
+
+    with pytest.raises(
+        ValueError, match="At least one end of the range must be provided"
+    ):
+        month_from_range((None, None), (2022, 1))

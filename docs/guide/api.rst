@@ -251,6 +251,18 @@ day.
    >>> day_from_range((6, 30), time(6), time(12))
    1
 
+:func:`~earthkit.time.timesteps.day_from_range` also supports providing only
+either end of the range:
+
+.. code-block:: pycon
+
+   >>> from datetime import time
+   >>> from earthkit.time import day_from_range
+   >>> day_from_range((None, 48))
+   2
+   >>> day_from_range((6, None), time(6), time(12))
+   1
+
 
 Weekly dates and ranges
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -305,6 +317,18 @@ at 00:00.
    >>> week_from_range((336, 504))
    3
    >>> week_from_range((96, 264), THURSDAY, MONDAY)
+   1
+
+:func:`~earthkit.time.timesteps.week_from_range` also supports providing only
+either end of the range:
+
+.. code-block:: pycon
+
+   >>> from earthkit.time.calendar import MONDAY, SUNDAY, THURSDAY
+   >>> from earthkit.time import week_from_range
+   >>> week_from_range((None, 504))
+   3
+   >>> week_from_range((96, None), THURSDAY, MONDAY)
    1
 
 
@@ -367,4 +391,18 @@ starting day of the month.
    >>> month_from_range((2544, 3288), date(2023, 1, 15))
    4
    >>> month_from_range((2880, 3624), date(2022, 1, 15), 15)
+   5
+
+:func:`~earthkit.time.timesteps.month_from_range` also supports providing only
+either end of the range:
+
+.. code-block:: pycon
+
+   >>> from datetime import date
+   >>> from earthkit.time import month_from_range
+   >>> month_from_range((744, None), (2025, 1))
+   2
+   >>> month_from_range((None, 3288), date(2023, 1, 15))
+   4
+   >>> month_from_range((2880, None), date(2022, 1, 15), 15)
    5

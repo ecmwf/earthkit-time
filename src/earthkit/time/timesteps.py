@@ -119,16 +119,23 @@ def range_from_day(
 
 
 def day_from_range(
-    steprange: Tuple[int, int],
+    steprange: Tuple[Union[int, None], Union[int, None]],
     base: Union[datetime, time, int] = 0,
     daystart: Union[time, int] = 0,
 ) -> int:
-    """Compute the day number corresponding to the given step range
+    """Compute the day number corresponding to the given step or step range
 
     This is the exact inverse of :func:`range_from_day`.
     """
     shift = _daily_shift(base, daystart)
     start, end = steprange
+    if start is None:
+        if end is None:
+            raise ValueError("At least one end of the range must be provided")
+        start = end - 24
+    elif end is None:
+        end = start + 24
+
     if end - start != 24:
         raise ValueError(f"Range '{steprange[0]}-{steprange[1]}' is not one day long")
     day, rem = divmod((end - shift), 24)
@@ -271,16 +278,23 @@ def range_from_week(
 
 
 def week_from_range(
-    steprange: Tuple[int, int],
+    steprange: Tuple[Union[int, None], Union[int, None]],
     base: Union[date, datetime, time, Weekday, Tuple[Weekday, time], None] = None,
     weekstart: Union[Weekday, None] = None,
 ) -> int:
-    """Compute the week number corresponding to the given step range
+    """Compute the week number corresponding to the given step or step range
 
     This is the exact inverse of :func:`range_from_week`.
     """
     shift = _weekly_shift(base, weekstart)
     start, end = steprange
+    if start is None:
+        if end is None:
+            raise ValueError("At least one end of the range must be provided")
+        start = end - _WEEK_IN_HOURS
+    elif end is None:
+        end = start + _WEEK_IN_HOURS
+
     if end - start != _WEEK_IN_HOURS:
         raise ValueError(f"Range '{steprange[0]}-{steprange[1]}' is not one week long")
     week, rem = divmod((end - shift), _WEEK_IN_HOURS)
@@ -417,22 +431,31 @@ def range_from_month(
 
 
 def month_from_range(
-    steprange: Tuple[int, int],
+    steprange: Tuple[Union[int, None], Union[int, None]],
     base: Union[date, MonthInYear, Tuple[int, int]],
     mstart: int = 1,
 ) -> int:
-    """Compute the forecast month corresponding to the given step range
+    """Compute the forecast month corresponding to the given step or step range
 
     This is the exact inverse of :func:`range_from_month`.
     """
     base = _month_to_date(base, mstart)
     startstep, endstep = steprange
-    start = base + timedelta(hours=startstep)
-    if start.day != mstart:
-        raise ValueError(
-            f"Range '{steprange[0]}-{steprange[1]}' does not align on a forecast month"
-        )
-    end = base + timedelta(hours=endstep)
-    if end.day != start.day:
-        raise ValueError(f"Range '{steprange[0]}-{steprange[1]}' is not one month long")
-    return month_from_startdate(base, start)
+    if startstep is not None:
+        start = base + timedelta(hours=startstep)
+        if start.day != mstart:
+            raise ValueError(
+                f"Range '{steprange[0]}-{steprange[1]}' does not align on a forecast month"
+            )
+        if endstep is not None:
+            end = base + timedelta(hours=endstep)
+            if end.day != start.day:
+                raise ValueError(
+                    f"Range '{steprange[0]}-{steprange[1]}' is not one month long"
+                )
+        return month_from_startdate(base, start)
+    else:
+        if endstep is None:
+            raise ValueError("At least one end of the range must be provided")
+        end = base + timedelta(hours=endstep)
+        return month_from_startdate(base, end) - 1
